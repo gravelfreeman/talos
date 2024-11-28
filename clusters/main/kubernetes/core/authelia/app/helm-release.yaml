@@ -1,0 +1,266 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authelia
+  namespace: authelia
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: authelia
+      version: 24.1.4
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                AUTHELIA_SERVER_ASSET_PATH: /config/assets
+
+    persistence:
+      config:
+        enabled: true
+        mountPath: /config
+        volsync:
+          - name: cfg
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+
+    domain: ${DOMAIN_0}
+    default_redirection_url: https://auth.${DOMAIN_0}
+
+    theme: grey
+
+    password_policy:
+      zxcvbn:
+        enabled: true
+        min_score: 3
+
+    authentication_backend:
+      ldap:
+        enabled: true
+        implementation: custom
+        url: ldap://lldap-ldap.lldap.svc.cluster.local:3890
+        base_dn: dc=${USER_10},dc=${DOMAIN_TLD_0}
+        additional_users_dn: ou=people
+        users_filter: (&({username_attribute}={input})(objectClass=person))
+        groups_filter: (member={dn})
+        user: uid=${USER_10},ou=people,dc=${USER_10},dc=${DOMAIN_TLD_0}
+        plain_password: ${LDAP_PLAIN_PASSWORD}
+      file:
+        enabled: false
+
+    regulation:
+      ban_time: 60m
+      find_time: 60m
+      max_retries: 10
+
+    notifier:
+      smtp:
+        enabled: true
+        host: ${SMTP_HOST_0}
+        port: 587
+        username: ${SMTP_USERNAME_0}
+        plain_password: ${SMTP_PASSWORD_AUTHELIA}
+        sender: ${SMTP_FROM_AUTHELIA}
+        subject: '[Authelia] {title}'
+        startup_check_address: ${SMTP_FROM_AUTHELIA}
+      filesystem:
+        enabled: false
+
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+        tls:
+          - hosts:
+            - auth.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: auth.${DOMAIN_0}
+
+    identity_providers:
+      oidc:
+        access_token_lifespan: 1h
+        authorize_code_lifespan: 1m
+        enable_client_debug_messages: false
+        enabled: true
+        id_token_lifespan: 1h
+        minimum_parameter_entropy: 8
+        refresh_token_lifespan: 90m
+        clients:
+
+          # NEXTCLOUD
+          - authorization_policy: two_factor
+            consent_mode: implicit
+            description: Freeman • Cloud
+            grant_types:
+            - authorization_code
+            - refresh_token
+            id: nextcloud
+            pkce_challange_method: S256
+            public: false
+            redirect_uris:
+            - https://cloud.${DOMAIN_0}/apps/oidc_login/oidc
+            require_pkce: true
+            response_modes:
+            - form_post
+            - query
+            - fragment
+            response_types:
+            - code
+            scopes:
+            - openid
+            - profile
+            - email
+            - groups
+            secret: ${OIDC_SECRET_NEXTCLOUD}
+            token_endpoint_auth_method: client_secret_basic
+            userinfo_signing_algorithm: none
+
+          # IMMICH
+          - authorization_policy: two_factor
+            consent_mode: implicit
+            description: Freeman • Photos
+            grant_types:
+            - authorization_code
+            - refresh_token
+            id: immich
+            public: false
+            redirect_uris:
+            - https://photos.${DOMAIN_0}/auth/login
+            - https://photos.${DOMAIN_0}/user-settings
+            - app.immich:/
+            require_pkce: false
+            response_modes:
+            - form_post
+            - query
+            - fragment
+            response_types:
+            - code
+            scopes:
+            - openid
+            - profile
+            - email
+            secret: OIDC_SECRET_IMMICH
+            token_endpoint_auth_method: client_secret_basic
+            userinfo_signing_algorithm: none
+
+          # VIKUNJA
+          - authorization_policy: two_factor
+            consent_mode: auto
+            description: Freeman • Todo
+            id: vikunja
+            public: false
+            redirect_uris:
+            - https://todo.${DOMAIN_0}/auth/openid/
+            - https://todo.${DOMAIN_0}/auth/openid/authelia
+            - https://todo.${DOMAIN_0}/api/oidc/authorization
+            require_pkce: false
+            scopes:
+            - openid
+            - profile
+            - email
+            secret: ${OIDC_SECRET_VIKUNJA}
+            token_endpoint_auth_method: client_secret_basic
+            userinfo_signing_algorithm: none
+
+    access_control:
+      rules:
+
+        # GENERIC API
+        - domain: "*.${DOMAIN_0}"
+          policy: bypass
+          resources:
+          - "^/api([/?].*)?$"
+          - "^/api([/?].*)?$"
+          - "^/identity.*$"
+          - "^/triggers.*$"
+          - "^/meshagents.*$"
+          - "^/meshsettings.*$"
+          - "^/agent.*$"
+          - "^/control.*$"
+          - "^/meshrelay.*$"
+          - "^/wl.*$"
+
+        # COMPANION API
+        - domain: "companion.${DOMAIN_0}"
+          policy: bypass
+          networks:
+          - "${EXCLUDED_IPV4_0}"
+          resources:
+          - "^/press([/?].*)?$"
+          - "^/assets([/?].*)?$"
+          - '^/socket\.io([/?].*)?$'
+
+        # USER_99
+        - domain:
+          - "companion.${DOMAIN_0}"
+          policy: two_factor
+          resources:
+          - "^/tablet([/?].*)?$"
+          - "^/assets([/?].*)?$"
+          - '^/socket\.io([/?].*)?$'
+          subject: user:${USER_99}
+
+        # USER_11
+        - domain:
+          - "homebox.${DOMAIN_0}"
+          - "mealie.${DOMAIN_0}"
+          - "stash.${DOMAIN_0}"
+          policy: two_factor
+          subject: user:${USER_11}
+
+        # USER GROUP
+        - domain:
+          - "auth.${DOMAIN_0}"
+          - "cloud.${DOMAIN_0}"
+          - "kavita.${DOMAIN_0}"
+          - "plex.${DOMAIN_1}"
+          - "search.${DOMAIN_0}"
+          policy: two_factor
+          subject: group:lldap_user
+
+        # ADMIN GROUP
+        - domain:
+          - "*.${DOMAIN_0}"
+          - "${DOMAIN_1}"
+          - "*.${DOMAIN_1}"
+          - "${DOMAIN_2}"
+          - "*.${DOMAIN_2}"
+          policy: two_factor
+          subject: group:lldap_admin

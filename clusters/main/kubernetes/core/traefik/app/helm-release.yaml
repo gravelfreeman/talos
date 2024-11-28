@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -32,76 +33,94 @@ spec:
   values:
     global:
       stopAll: false
+
     defaultCertificate: "domain-0-wildcard"
+
     service:
       tcp:
         loadBalancerIP: ${TRAEFIK_IP}
+
     ingress:
       main:
         enabled: true
         integrations:
           traefik:
             enabled: true
-          middlewares:
-            - name: auth
+            middlewares:
+              - name: auth
+                namespace: traefik
         tls:
           - hosts:
             - traefik.${DOMAIN_0}
             clusterIssuer: domain-0-wildcard
         hosts:
           - host: traefik.${DOMAIN_0}
-            paths:
-            - path: /
-              pathType: Prefix
+
     middlewares:
+      ipWhiteList:
+        - name: internal-only
+          sourceRange:
+            - 10.0.0.0/8
+            - 172.1.0.0/12
+      # DASHBOARD
+      redirectRegex:
+        - name: traefik-dash
+          regex: https://traefik\.${DOMAIN_0}/?$
+          replacement: https://traefik.${DOMAIN_0}/dashboard/#/
+          permanent: true
+      # AUTHELIA
       forwardAuth:
         - name: auth
-          address: http://authelia.ix-authelia.svc.cluster.local:9091/api/verify?rd=https://auth.${DOMAIN_0}/
+          address: http://authelia.authelia.svc.cluster.local:9091/api/verify?rd=https://auth.${DOMAIN_0}/
           authResponseHeaders: 
             - Remote-User
             - Remote-Group
             - Remote-Name
             - Remote-Email
           trustForwardHeader: true
+      # THEME-PARK
       themePark:
-        defaults:
+        - name: qb1-theme
+          appName: "qbittorrent"
+          themeName : "overseerr"
           baseUrl: https://theme-park.dev
-        apps:
-          - appName: qbittorrent
-            themes:
-              - name: tp-qb1
-                themeName: overseerr
-              - name: tp-qb2
-                themeName: aquamarine
-              - name: tp-qb3
-                themeName: dracula
-              - name: tp-qb4
-                themeName: maroon
-          - appName: sonarr
-            themes:
-              - name: tp-sonarr
-                themeName: overseerr
-          - appName: radarr
-            themes:
-              - name: tp-radarr
-                themeName: overseerr
-          - appName: bazarr
-            themes:
-              - name: tp-bazarr
-                themeName: overseerr
-          - appName: prowlarr
-            themes:
-              - name: tp-prowlarr
-                themeName: overseerr
-          - appName: sabnzbd
-            themes:
-              - name: tp-sabnzbd
-                themeName: overseerr
-          - appName: lidarr
-            themes:
-              - name: tp-lidarr
-                themeName: overseerr
-          - appName: readarr
-            themes:
-              - name: tp-readarr
-                themeName: overseerr
+        - name: qb2-theme
+          appName: "qbittorrent"
+          themeName : "aquamarine"
+          baseUrl: https://theme-park.dev
+        - name: qb3-theme
+          appName: "qbittorrent"
+          themeName : "dracula"
+          baseUrl: https://theme-park.dev
+        - name: qb4-theme
+          appName: "qbittorrent"
+          themeName : "maroon"
+          baseUrl: https://theme-park.dev
+        - name: sabnzbd-theme
+          appName: "sabnzbd"
+          themeName : "overseerr"
+          baseUrl: https://theme-park.dev
+        - name: sonarr-theme
+          appName: "sonarr"
+          themeName : "overseerr"
+          baseUrl: https://theme-park.dev
+        - name: radarr-theme
+          appName: "radarr"
+          themeName : "overseerr"
+          baseUrl: https://theme-park.dev
+        - name: lidarr-theme
+          appName: "lidarr"
+          themeName : "overseerr"
+          baseUrl: https://theme-park.dev
+        - name: readarr-theme
+          appName: "readarr"
+          themeName : "overseerr"
+          baseUrl: https://theme-park.dev
+        - name: prowlarr-theme
+          appName: "prowlarr"
+          themeName : "overseerr"
+          baseUrl: https://theme-park.dev
+        - name: bazarr-theme
+          appName: "bazarr"
+          themeName : "overseerr"
+          baseUrl: https://theme-park.dev

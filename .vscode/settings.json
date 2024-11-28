@@ -1,10 +1,11 @@
 {
     "files.associations": {
-        "*.yaml": "home-assistant"
+        "*.yaml": "yaml"
     },
     "sops.defaults.ageKeyFile": "age.key",
     "yaml.schemas": {
-        "Kubernetes": "./kubernetes/*.yaml"
+        "Kubernetes": "./kubernetes/*.yaml",
+        "https://raw.githubusercontent.com/rancher/k3d/main/pkg/config/config.versions.schema.json": "file:///c%3A/Users/Freeman/talos/clusters/main/kubernetes/core/system-upgrade-controller-plans/app/kubernetes.yaml"
     },
     "vs-kubernetes": {
         "vs-kubernetes.kubeconfig": "/workspaces/cluster/kubeconfig",
