@@ -28,4 +28,4 @@ resources:
   - stakater.yaml
   - topolvm.yaml
   - truecharts.yaml
-# more goes here!
+  - external-dns.yaml

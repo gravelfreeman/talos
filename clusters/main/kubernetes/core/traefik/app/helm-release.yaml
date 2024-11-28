@@ -42,8 +42,8 @@ spec:
         integrations:
           traefik:
             enabled: true
-          middlewares:
-            - name: auth
+          # middlewares:
+          #   - name: auth
         tls:
           - hosts:
             - traefik.${DOMAIN_0}
@@ -54,54 +54,59 @@ spec:
             - path: /
               pathType: Prefix
     middlewares:
-      forwardAuth:
-        - name: auth
-          address: http://authelia.ix-authelia.svc.cluster.local:9091/api/verify?rd=https://auth.${DOMAIN_0}/
-          authResponseHeaders: 
-            - Remote-User
-            - Remote-Group
-            - Remote-Name
-            - Remote-Email
-          trustForwardHeader: true
-      themePark:
-        defaults:
-          baseUrl: https://theme-park.dev
-        apps:
-          - appName: qbittorrent
-            themes:
-              - name: tp-qb1
-                themeName: overseerr
-              - name: tp-qb2
-                themeName: aquamarine
-              - name: tp-qb3
-                themeName: dracula
-              - name: tp-qb4
-                themeName: maroon
-          - appName: sonarr
-            themes:
-              - name: tp-sonarr
-                themeName: overseerr
-          - appName: radarr
-            themes:
-              - name: tp-radarr
-                themeName: overseerr
-          - appName: bazarr
-            themes:
-              - name: tp-bazarr
-                themeName: overseerr
-          - appName: prowlarr
-            themes:
-              - name: tp-prowlarr
-                themeName: overseerr
-          - appName: sabnzbd
-            themes:
-              - name: tp-sabnzbd
-                themeName: overseerr
-          - appName: lidarr
-            themes:
-              - name: tp-lidarr
-                themeName: overseerr
-          - appName: readarr
-            themes:
-              - name: tp-readarr
-                themeName: overseerr
+      # forwardAuth:
+      #   - name: auth
+      #     address: http://authelia.authelia.svc.cluster.local:9091/api/verify?rd=https://${DOMAIN_0}/
+      #     authResponseHeaders: 
+      #       - Remote-User
+      #       - Remote-Group
+      #       - Remote-Name
+      #       - Remote-Email
+      #     trustForwardHeader: true
+      ipWhiteList:
+          - name: internal-only
+            sourceRange:
+              - 10.0.0.0/8
+              - 172.1.0.0/12
+      # themePark:
+      #   defaults:
+      #     baseUrl: https://theme-park.dev
+      #   apps:
+      #     - appName: qbittorrent
+      #       themes:
+      #         - name: tp-qb1
+      #           themeName: overseerr
+      #         - name: tp-qb2
+      #           themeName: aquamarine
+      #         - name: tp-qb3
+      #           themeName: dracula
+      #         - name: tp-qb4
+      #           themeName: maroon
+      #     - appName: sonarr
+      #       themes:
+      #         - name: tp-sonarr
+      #           themeName: overseerr
+      #     - appName: radarr
+      #       themes:
+      #         - name: tp-radarr
+      #           themeName: overseerr
+      #     - appName: bazarr
+      #       themes:
+      #         - name: tp-bazarr
+      #           themeName: overseerr
+      #     - appName: prowlarr
+      #       themes:
+      #         - name: tp-prowlarr
+      #           themeName: overseerr
+      #     - appName: sabnzbd
+      #       themes:
+      #         - name: tp-sabnzbd
+      #           themeName: overseerr
+      #     - appName: lidarr
+      #       themes:
+      #         - name: tp-lidarr
+      #           themeName: overseerr
+      #     - appName: readarr
+      #       themes:
+      #         - name: tp-readarr
+      #           themeName: overseerr
