@@ -1,0 +1,107 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: joal
+  namespace: joal
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: custom-app
+      version: 13.0.8
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  values:
+    addons:
+      codeserver:
+        enabled: true
+        service:
+          loadBalancerIP: ""
+          ports:
+            codeserver:
+              port: 36555
+          type: LoadBalancer
+      vpn:
+        configFile: ""
+        env:
+          SERVER_REGIONS:
+            name: SERVER_REGIONS
+            value: ${SERVER_REGIONS_10}
+          VPN_SERVICE_PROVIDER:
+            name: VPN_SERVICE_PROVIDER
+            value: ${VPN_SERVICE_PROVIDER_1}
+          VPN_TYPE:
+            name: VPN_TYPE
+            value: wireguard
+          WIREGUARD_ADDRESSES:
+            name: WIREGUARD_ADDRESSES
+            value: ${WIREGUARD_ADDRESSES_10}
+          WIREGUARD_PRESHARED_KEY:
+            name: WIREGUARD_PRESHARED_KEY
+            value: ${WIREGUARD_PRESHARED_KEY_10}
+          WIREGUARD_PRIVATE_KEY:
+            name: WIREGUARD_PRIVATE_KEY
+            value: ${WIREGUARD_PRIVATE_KEY_10}
+        excludedNetworks_IPv4:
+          - ${EXCLUDED_IPV4_0}
+        killSwitch: true
+        type: gluetun
+    credentials:
+      backblaze:
+        accessKey: ${BUCKET_ACCESSKEY}
+        bucket: ${BUCKET_NAME}
+        encrKey: ${BUCKET_ENCRKEY}
+        name: backblaze
+        path: ""
+        secretKey: ${BUCKET_SECRETKEY}
+        type: s3
+        url: ${BUCKET_URL}
+    persistence:
+      torrents:
+        enabled: true
+        type: nfs
+        mountPath: /config/torrents
+        path: ${DATASET_MEDIA}/temp/joal
+        server: ${NFS_SERVER_0}
+    securityContext:
+      container:
+        UMASK: "0022"
+        privileged: false
+        runAsUser: 0
+      pod:
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      main:
+        enabled: true
+        ports:
+          main:
+            enabled: true
+            port: 10710
+            protocol: http
+            targetPort: 10710
+        type: LoadBalancer
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                JOAL_PATH_PREFIX:
+                  name: JOAL_PATH_PREFIX
+                  value: web
+                JOAL_SECRET_TOKEN:
+                  name: JOAL_SECRET_TOKEN
+                  value: ${JOAL_SECRET_TOKEN}
+                ROOT:
+                  name: ROOT
+                  value: /config
+              extraArgs:
+                - --joal-conf=/config
+                - --spring.main.web-environment=true
+                - --server.port=10710
+                - --joal.ui.path.prefix=web
+                - --joal.ui.secret-token=${JOAL_SECRET_TOKEN}
+        replicas: 1
+        type: Deployment

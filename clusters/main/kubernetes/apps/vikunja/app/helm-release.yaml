@@ -1,0 +1,264 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vikunja
+  namespace: vikunja
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: vikunja
+      version: 14.1.7
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  values:
+    cnpg:
+      main:
+        backups:
+          credentials: backblaze
+          enabled: true
+        cluster:
+          instances: 2
+          singleNode: true
+        database: vikunja
+        enabled: true
+        monitoring:
+          disableDefaultQueries: false
+          enablePodMonitor: true
+        password: ${CNPG_PASSWORD_VIKUNJA}
+        pgVersion: 16
+        user: vikunja
+    credentials:
+      backblaze:
+        accessKey: ${BUCKET_ACCESSKEY}
+        bucket: ${BUCKET_NAME}
+        encrKey: ${BUCKET_ENCRKEY}
+        name: backblaze
+        path: ""
+        secretKey: ${BUCKET_SECRETKEY}
+        type: s3
+        url: ${BUCKET_URL}
+    frontendImage:
+      repository: vikunja/frontend
+      tag: 0.22.1@sha256:f0223d441997fe29c377d0b476dc4bb2fc091b44b9c24d76b1b88c213df520c5
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+          middlewares:
+            - name: auth
+        tls:
+          - hosts:
+            - todo.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: todo.${DOMAIN_0}
+            paths:
+            - path: /
+              pathType: Prefix
+    nginxImage:
+      repository: nginx
+      tag: 1.26.0@sha256:192e88a0053c178683ca139b9d9a2afb0ad986d171fae491949fe10970dd9da9
+    persistence:
+      files:
+        enabled: true
+        mountPath: /app/vikunja/files
+        volsync:
+          - credentials: backblaze
+            name: dat
+            src:
+              enabled: true
+            type: restic
+      vikunja-config:
+        enabled: true
+        objectName: config
+        targetSelector:
+          main:
+            main:
+              mountPath: /etc/vikunja/config.yaml
+              subPath: config.yaml
+        type: secret
+      vikunja-nginx:
+        enabled: true
+        noMount: true
+        objectName: nginx-config
+        targetSelector:
+          main:
+            proxy:
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: nginx-config
+        type: configmap
+    redis:
+      enabled: true
+    securityContext:
+      container:
+        UMASK: "0022"
+        capabilities:
+          add:
+            - NET_BIND_SERVICE
+        runAsUser: 0
+      pod:
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      main:
+        enabled: true
+        ports:
+          main:
+            port: 10220
+        type: ClusterIP
+    updated: true
+    vikunja:
+      auth:
+        local:
+          enabled: true
+        openid:
+          enabled: true
+          providers:
+            - authurl: https://auth.${DOMAIN_0}/
+              clientid: vikunja
+              clientsecret: ${CLIENT_SECRET_VIKUNJA}
+              logouturl: ""
+              name: Authelia
+          redirecturl: https://todo.${DOMAIN_0}/auth/openid/
+      avatar:
+        gravatarexpiration: 3600
+      backgrounds:
+        enabled: false
+        providers:
+          unsplash:
+            accesstoken: ""
+            applicationid: ""
+            enabled: false
+          upload:
+            enabled: true
+      cors:
+        enabled: true
+        maxage: 0
+      defaultsettings:
+        avatar_file_id: 0
+        avatar_provider: upload
+        default_list_id: 0
+        discoverable_by_email: false
+        discoverable_by_name: false
+        email_reminders_enabled: false
+        language: ""
+        overdue_tasks_reminders_enabled: false
+        overdue_tasks_reminders_time: "09:00"
+        timezone: ""
+        week_start: 0
+      files:
+        maxsize: 20MB
+      legal:
+        imprinturl: ""
+        privacyurl: ""
+      log:
+        database: "off"
+        databaselevel: WARNING
+        echo: "off"
+        enabled: false
+        events: stdout
+        eventslevel: INFO
+        http: stdout
+        level: INFO
+        path: /app/vikunja/logs
+        standard: stdout
+      mailer:
+        authtype: plain
+        enabled: false
+        forcessl: true
+        fromemail: ""
+        host: ""
+        password: ""
+        port: 587
+        queuelength: 100
+        queuetimeout: 30
+        skiptlsverify: false
+        username: ""
+      migration:
+        microsofttodo:
+          clientid: ""
+          clientsecret: ""
+          enable: false
+          enabled: false
+          redirecturl: ""
+        todoist:
+          clientid: ""
+          clientsecret: ""
+          enable: false
+          enabled: false
+          redirecturl: ""
+        trello:
+          enable: false
+          enabled: false
+          key: ""
+          redirecturl: ""
+      ratelimit:
+        enabled: false
+        kind: user
+        limit: 100
+        period: 60
+      service:
+        enablecaldav: false
+        enableemailreminders: false
+        enablelinksharing: false
+        enableregistration: false
+        enabletaskattachments: false
+        enabletaskcomments: false
+        enabletotp: false
+        enableuserdeletion: false
+        frontendurl: https://todo.${DOMAIN_0}
+        jwtttl: 259200
+        jwtttllong: 2.592e+06
+        maxavatarsize: 1024
+        maxitemsperpage: 50
+        motd: ""
+    workload:
+      main:
+        podSpec:
+          containers:
+            frontend:
+              enabled: true
+              imageSelector: frontendImage
+              probes:
+                liveness:
+                  port: 80
+                  type: http
+                readiness:
+                  port: 80
+                  type: http
+                startup:
+                  port: 80
+                  type: http
+            main:
+              probes:
+                liveness:
+                  path: /health
+                  port: 3456
+                  type: http
+                readiness:
+                  path: /health
+                  port: 3456
+                  type: http
+                startup:
+                  path: /health
+                  port: 3456
+                  type: http
+            proxy:
+              enabled: true
+              imageSelector: nginxImage
+              probes:
+                liveness:
+                  port: '{{ .Values.service.main.ports.main.port }}'
+                  type: http
+                readiness:
+                  port: '{{ .Values.service.main.ports.main.port }}'
+                  type: http
+                startup:
+                  port: '{{ .Values.service.main.ports.main.port }}'
+                  type: http
+        replicas: 1
+        type: Deployment

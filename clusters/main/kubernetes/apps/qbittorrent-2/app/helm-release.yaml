@@ -1,0 +1,180 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: qbittorrent-2
+  namespace: qbittorrent-2
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: qbittorrent
+      version: 20.0.11
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  values:
+    addons:
+      vpn:
+        env:
+          FIREWALL_VPN_INPUT_PORTS:
+            name: FIREWALL_VPN_INPUT_PORTS
+            value: ${FIREWALL_VPN_INPUT_PORTS_3}
+          HTTPPROXY:
+            name: HTTPPROXY
+            value: "on"
+          HTTPPROXY_LOG:
+            name: HTTPPROXY_LOG
+            value: "on"
+          VPN_ENDPOINT_IP:
+            name: VPN_ENDPOINT_IP
+            value: ${VPN_ENDPOINT_IP_3}
+          VPN_ENDPOINT_PORT:
+            name: VPN_ENDPOINT_PORT
+            value: ${VPN_ENDPOINT_PORT_3}
+          VPN_SERVICE_PROVIDER:
+            name: VPN_SERVICE_PROVIDER
+            value: ${VPN_SERVICE_PROVIDER_0}
+          VPN_TYPE:
+            name: VPN_TYPE
+            value: wireguard
+          WIREGUARD_ADDRESSES:
+            name: WIREGUARD_ADDRESSES
+            value: ${WIREGUARD_ADDRESSES_3}
+          WIREGUARD_PRIVATE_KEY:
+            name: WIREGUARD_PRIVATE_KEY
+            value: ${WIREGUARD_PRIVATE_KEY_3}
+          WIREGUARD_PUBLIC_KEY:
+            name: WIREGUARD_PUBLIC_KEY
+            value: ${WIREGUARD_PUBLIC_KEY_3}
+        excludedNetworks_IPv4:
+          - ${EXCLUDED_IPV4_0}
+        killSwitch: true
+        type: gluetun
+    credentials:
+      backblaze:
+        accessKey: ${BUCKET_ACCESSKEY}
+        bucket: ${BUCKET_NAME}
+        encrKey: ${BUCKET_ENCRKEY}
+        name: backblaze
+        path: ""
+        secretKey: ${BUCKET_SECRETKEY}
+        type: s3
+        url: ${BUCKET_URL}
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+          middlewares:
+            - name: auth
+            - name: tp-qb2
+        tls:
+          - hosts:
+            - qb2.${DOMAIN_1}
+            clusterIssuer: domain-1-wildcard
+        hosts:
+          - host: qb2.${DOMAIN_1}
+            paths:
+            - path: /
+              pathType: Prefix
+    persistence:
+      config:
+        enabled: true
+        mountPath: /config
+        volsync:
+          - credentials: backblaze
+            name: cfg
+            src:
+              enabled: true
+            type: restic
+      media:
+        enabled: true
+        type: nfs
+        mountPath: /media
+        path: ${DATASET_MEDIA}
+        server: ${NFS_SERVER_0}
+    qbitportforward:
+      QBT_PASSWORD: ${QBT_PASSWORD}
+      QBT_USERNAME: ${QBT_USERNAME}
+      enabled: false
+    qbitportforwardImage:
+      repository: mjmeli/qbittorrent-port-forward-gluetun-server
+      tag: latest@sha256:67d0d21ed792cf80716d4211e7162b6d375af5c12f3cf096c9032ad705dddaa8
+    securityContext:
+      container:
+        UMASK: "0022"
+        runAsGroup: 568
+        runAsUser: 568
+      pod:
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      gluetun:
+        enabled: true
+        ports:
+          gluetun:
+            enabled: true
+            port: 8000
+            protocol: http
+            targetPort: 8000
+        type: ClusterIP
+      main:
+        enabled: true
+        ports:
+          main:
+            port: 10092
+        type: ClusterIP
+      proxy:
+        advancedsvcset: false
+        enabled: true
+        name: proxy
+        ports:
+          proxy:
+            enabled: true
+            name: proxy
+            port: 8888
+            protocol: http
+            targetPort: 8888
+        type: ClusterIP
+      torrent:
+        enabled: true
+        ports:
+          torrent:
+            enabled: true
+            port: 28414
+            protocol: tcp
+          torrentudp:
+            enabled: true
+            port: '{{ .Values.service.torrent.ports.torrent.port }}'
+            protocol: udp
+        type: LoadBalancer
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                QBITTORRENT__PORT: '{{ .Values.service.main.ports.main.port }}'
+                QBT_BitTorrent__Session__Port: '{{ .Values.service.torrent.ports.torrent.port }}'
+                QBT_Preferences__Connection__PortRangeMin: '{{ .Values.service.torrent.ports.torrent.port }}'
+                QBT_Preferences__WebUI__Address: 0.0.0.0
+        replicas: 1
+        type: Deployment
+      qbitportforward:
+        enabled: true
+        podSpec:
+          containers:
+            qbitportforward:
+              command: /usr/src/app/main.sh
+              enabled: true
+              env:
+                GTN_ADDR: '{{ printf "http://%v-gluetun:8000" (include "tc.v1.common.lib.chart.names.fullname" $) }}'
+                QBT_ADDR: '{{ printf "http://%v:%v" (include "tc.v1.common.lib.chart.names.fullname" $) .Values.service.main.ports.main.port }}'
+                QBT_PASSWORD: '{{ .Values.qbitportforward.QBT_PASSWORD }}'
+                QBT_USERNAME: '{{ .Values.qbitportforward.QBT_USERNAME }}'
+              imageSelector: qbitportforwardImage
+              primary: true
+          restartPolicy: OnFailure
+        schedule: '*/5 * * * *'
+        type: CronJob

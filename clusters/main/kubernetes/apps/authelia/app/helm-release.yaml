@@ -1,0 +1,397 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authelia
+  namespace: authelia
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: authelia
+      version: 24.1.4
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  values:
+    access_control:
+      default_policy: deny
+      rules:
+        - domain:
+          - '*.${DOMAIN_0}'
+          domain_regex: []
+          networks: []
+          policy: bypass
+          resources:
+          - ^/api([/?].*)?$
+          - ^/identity.*$
+          - ^/triggers.*$
+          - ^/meshagents.*$
+          - ^/meshsettings.*$
+          - ^/agent.*$
+          - ^/control.*$
+          - ^/meshrelay.*$
+          - ^/wl.*$
+          subject: []
+        - domain:
+          - companion.${DOMAIN_0}
+          domain_regex: []
+          networks:
+          - ${EXCLUDED_IPV4_0}
+          - 100.0.0.0/8
+          policy: bypass
+          resources:
+          - ^/press([/?].*)?$
+          - ^/assets([/?].*)?$
+          - ^/socket\.io([/?].*)?$
+          subject: []
+        - domain:
+          - companion.${DOMAIN_0}
+          domain_regex: []
+          networks: []
+          policy: two_factor
+          resources:
+          - ^/tablet([/?].*)?$
+          - ^/assets([/?].*)?$
+          - ^/socket\.io([/?].*)?$
+          subject:
+          - user:${USER_99}
+        - domain:
+          - ${DOMAIN_0}
+          - '*.${DOMAIN_0}'
+          - ${DOMAIN_2}
+          - '*.${DOMAIN_2}'
+          domain_regex: []
+          networks: []
+          policy: two_factor
+          resources: []
+          subject:
+          - group:lldap_password_manager
+        - domain:
+          - auth.${DOMAIN_0}
+          - homebox.${DOMAIN_0}
+          - kavita.${DOMAIN_0}
+          - mealie.${DOMAIN_0}
+          - stash.${DOMAIN_0}
+          - search.${DOMAIN_0}
+          domain_regex: []
+          networks: []
+          policy: two_factor
+          resources: []
+          subject:
+          - user:${USER_11}
+    authentication_backend:
+      disable_reset_password: false
+      file:
+        enabled: false
+        password:
+          algorithm: argon2id
+          iterations: 1
+          key_length: 32
+          memory: 1024
+          parallelism: 8
+          salt_length: 16
+        path: /config/users_database.yml
+      ldap:
+        additional_groups_dn: ou=groups
+        additional_users_dn: ou=people
+        base_dn: dc=${USER_10},dc=${DOMAIN_TLD_0}
+        display_name_attribute: displayName
+        enabled: true
+        group_name_attribute: cn
+        groups_filter: (member={dn})
+        implementation: custom
+        mail_attribute: mail
+        plain_password: ${LDAP_PLAIN_PASSWORD}
+        start_tls: false
+        timeout: 5s
+        tls:
+          minimum_version: TLS1.2
+          server_name: ""
+          skip_verify: false
+        url: ldap://lldap-ldap.ix-lldap.svc.cluster.local:3890
+        user: uid=${USER_10},ou=people,dc=${USER_10},dc=${DOMAIN_TLD_0}
+        username_attribute: uid
+        users_filter: (&({username_attribute}={input})(objectClass=person))
+      refresh_interval: 5m
+    cnpg:
+      main:
+        backups:
+          enabled: false
+          revision: ""
+        cluster:
+          instances: 2
+          singleNode: true
+        database: authelia
+        enabled: true
+        monitoring:
+          disableDefaultQueries: false
+          enablePodMonitor: true
+        password: ${CNPG_PASSWORD_AUTHELIA}
+        pgVersion: 16
+        user: authelia
+    credentials:
+      backblaze:
+        accessKey: ${BUCKET_ACCESSKEY}
+        bucket: ${BUCKET_NAME}
+        encrKey: ${BUCKET_ENCRKEY}
+        name: backblaze
+        path: ""
+        secretKey: ${BUCKET_SECRETKEY}
+        type: s3
+        url: ${BUCKET_URL}
+    default_redirection_url: https://auth.${DOMAIN_0}
+    domain: ${DOMAIN_0}
+    identity_providers:
+      oidc:
+        access_token_lifespan: 1h
+        authorize_code_lifespan: 1m
+        clients:
+          - audience: []
+            authorization_policy: two_factor
+            consent_mode: implicit
+            description: Freeman • Cloud
+            grant_types:
+            - authorization_code
+            - refresh_token
+            id: nextcloud
+            pkce_challange_method: S256
+            public: false
+            redirect_uris:
+            - https://cloud.${DOMAIN_0}/apps/oidc_login/oidc
+            require_pkce: true
+            response_modes:
+            - form_post
+            - query
+            - fragment
+            response_types:
+            - code
+            scopes:
+            - openid
+            - profile
+            - email
+            - groups
+            secret: ${OIDC_SECRET_NEXTCLOUD}
+            token_endpoint_auth_method: client_secret_basic
+            userinfo_signing_algorithm: none
+          - audience: []
+            authorization_policy: two_factor
+            consent_mode: implicit
+            description: Freeman • Photos
+            grant_types:
+            - authorization_code
+            - refresh_token
+            id: immich
+            public: false
+            redirect_uris:
+            - https://photos.${DOMAIN_0}/auth/login
+            - https://photos.${DOMAIN_0}/user-settings
+            - app.immich:/
+            require_pkce: false
+            response_modes:
+            - form_post
+            - query
+            - fragment
+            response_types:
+            - code
+            scopes:
+            - openid
+            - profile
+            - email
+            secret: OIDC_SECRET_IMMICH
+            token_endpoint_auth_method: client_secret_basic
+            userinfo_signing_algorithm: none
+          - audience: []
+            authorization_policy: two_factor
+            consent_mode: auto
+            description: Freeman • Todo
+            grant_types: []
+            id: vikunja
+            public: false
+            redirect_uris:
+            - https://todo.${DOMAIN_0}/auth/openid/
+            - https://todo.${DOMAIN_0}/auth/openid/authelia
+            - https://todo.${DOMAIN_0}/api/oidc/authorization
+            require_pkce: false
+            response_modes: []
+            response_types: []
+            scopes:
+            - openid
+            - profile
+            - email
+            secret: ${OIDC_SECRET_VIKUNJA}
+            token_endpoint_auth_method: client_secret_basic
+            userinfo_signing_algorithm: none
+        enable_client_debug_messages: false
+        enabled: true
+        id_token_lifespan: 1h
+        minimum_parameter_entropy: 8
+        refresh_token_lifespan: 90m
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: auth.${DOMAIN_0}
+            paths:
+            - path: /
+              pathType: Prefix
+        ingressClassName: ""
+        integrations:
+          traefik:
+            allowCors: false
+            enabled: true
+            entrypoints:
+              - websecure
+        required: true
+        tls:
+          - certificateIssuer: ""
+            clusterCertificate: primary
+            hosts:
+            - auth.${DOMAIN_0}
+            - auth.${DOMAIN_2}
+            secretName: ""
+    log:
+      format: text
+      level: info
+    notifier:
+      disable_startup_check: false
+      filesystem:
+        enabled: false
+        filename: /config/notification.txt
+      smtp:
+        disable_html_emails: false
+        disable_require_tls: false
+        enabled: true
+        enabledSecret: false
+        host: ${SMTP_HOST_0}
+        identifier: localhost
+        plain_password: ${SMTP_PASSWORD_AUTHELIA}
+        port: 587
+        sender: ${SMTP_FROM_AUTHELIA}
+        startup_check_address: ${SMTP_FROM_AUTHELIA}
+        subject: '[Authelia] {title}'
+        timeout: 5s
+        tls:
+          minimum_version: TLS1.2
+          server_name: ""
+          skip_verify: false
+        username: ${SMTP_USERNAME_0}
+    ntp:
+      address: time.cloudflare.com:123
+      disable_failure: true
+      disable_startup_check: false
+      max_desync: 3s
+      version: 4
+    password_policy:
+      enabled: true
+      standard:
+        enabled: false
+        max_length: 0
+        min_length: 8
+        require_lowercase: false
+        require_number: false
+        require_special: false
+        require_uppercase: false
+      zxcvbn:
+        enabled: true
+        min_score: 3
+    persistence:
+      config:
+        enabled: true
+        mountPath: /config
+        volsync:
+          - credentials: backblaze
+            name: cfg
+            src:
+              enabled: true
+            type: restic
+    redis:
+      enabled: true
+    redisProvider:
+      database_index: 0
+      high_availability:
+        enabled: false
+        enabledSecret: false
+        route_by_latency: false
+        route_randomly: false
+        sentinel_name: mysentinel
+      maximum_active_connections: 8
+      minimum_idle_connections: 0
+      port: 6379
+      tls:
+        enabled: false
+        minimum_version: TLS1.2
+        server_name: ""
+        skip_verify: false
+      username: ""
+    regulation:
+      ban_time: 60m
+      find_time: 60m
+      max_retries: 10
+    securityContext:
+      container:
+        UMASK: "0022"
+        runAsGroup: 568
+        runAsUser: 568
+      pod:
+        fsGroupChangePolicy: OnRootMismatch
+    server:
+      path: ""
+      port: 9091
+      read_buffer_size: 4096
+      write_buffer_size: 4096
+    service:
+      main:
+        enabled: true
+        ports:
+          main:
+            port: 9091
+            targetPort: 9091
+        type: ClusterIP
+    session:
+      expiration: 1h
+      inactivity: 5m
+      name: authelia_session
+      remember_me_duration: 5M
+      same_site: lax
+    storage:
+      postgres:
+        database: authelia
+        port: 5432
+        sslmode: disable
+        timeout: 5s
+        username: authelia
+    theme: grey
+    totp:
+      issuer: Authelia
+      period: 30
+      skew: 1
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              args:
+                - --config=/configuration.yaml
+              command:
+                - authelia
+              env:
+                AUTHELIA_SERVER_ASSET_PATH:
+                  name: AUTHELIA_SERVER_ASSET_PATH
+                  value: /config/assets
+              envFrom:
+                - configMapRef:
+                  name: authelia-paths
+              probes:
+                liveness:
+                  path: /api/health
+                  type: http
+                readiness:
+                  path: /api/health
+                  type: http
+                startup:
+                  path: /api/health
+                  type: http
+        replicas: 2
+        strategy: RollingUpdate
+        type: Deployment

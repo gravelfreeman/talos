@@ -1,0 +1,89 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: homebox
+  namespace: homebox
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: homebox
+      version: 7.0.8
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  values:
+    credentials:
+      backblaze:
+        accessKey: ${BUCKET_ACCESSKEY}
+        bucket: ${BUCKET_NAME}
+        encrKey: ${BUCKET_ENCRKEY}
+        name: backblaze
+        path: ""
+        secretKey: ${BUCKET_SECRETKEY}
+        type: s3
+        url: ${BUCKET_URL}
+    homebox:
+      allow_registration: true
+      auto_increment_asset_id: true
+      log_format: text
+      log_level: info
+      mailer_from: ""
+      mailer_host: ""
+      mailer_password: ""
+      mailer_port: 587
+      mailer_username: ""
+      max_upload_size: 10
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+          middlewares:
+            - name: auth
+        tls:
+          - hosts:
+            - homebox.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: homebox.${DOMAIN_0}
+            paths:
+            - path: /
+              pathType: Prefix
+    persistence:
+      data:
+        enabled: true
+        mountPath: /data
+        volsync:
+          - credentials: backblaze
+            name: dat
+            src:
+              enabled: true
+            type: restic
+    securityContext:
+      container:
+        UMASK: "0022"
+        runAsGroup: 568
+        runAsUser: 568
+      pod:
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      main:
+        enabled: true
+        ports:
+          main:
+            port: 10603
+            protocol: http
+        type: ClusterIP
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              envFrom:
+                - secretRef:
+                  name: homebox-secret
+        replicas: 1
+        type: Deployment

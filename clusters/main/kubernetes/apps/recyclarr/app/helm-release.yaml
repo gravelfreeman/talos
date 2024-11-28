@@ -1,0 +1,71 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: recyclarr
+  namespace: recyclarr
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: recyclarr
+      version: 10.0.8
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  values:
+    addons:
+      codeserver:
+        enabled: true
+        service:
+          loadBalancerIP: ""
+          ports:
+            codeserver:
+              port: 36111
+          type: LoadBalancer
+    credentials:
+      backblaze:
+        accessKey: ${BUCKET_ACCESSKEY}
+        bucket: ${BUCKET_NAME}
+        encrKey: ${BUCKET_ENCRKEY}
+        name: backblaze
+        path: ""
+        secretKey: ${BUCKET_SECRETKEY}
+        type: s3
+        url: ${BUCKET_URL}
+    persistence:
+      config:
+        enabled: true
+        mountPath: /config
+        targetSelectAll: true
+        volsync:
+          - credentials: backblaze
+            name: cfg
+            src:
+              enabled: true
+            type: restic
+    securityContext:
+      container:
+        UMASK: "0022"
+        runAsGroup: 568
+        runAsUser: 568
+      pod:
+        fsGroupChangePolicy: OnRootMismatch
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                CRON_SCHEDULE: '@daily'
+          initContainers:
+            initconfig:
+              command:
+                - recyclarr
+                - config
+                - create
+              enabled: true
+              imageSelector: image
+              type: install
+        replicas: 1
+        type: Deployment

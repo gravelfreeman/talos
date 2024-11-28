@@ -1,0 +1,194 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sftpgo
+  namespace: sftpgo
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: sftpgo
+      version: 7.1.4
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  values:
+    credentials:
+      backblaze:
+        accessKey: ${BUCKET_ACCESSKEY}
+        bucket: ${BUCKET_NAME}
+        encrKey: ${BUCKET_ENCRKEY}
+        name: backblaze
+        path: ""
+        secretKey: ${BUCKET_SECRETKEY}
+        type: s3
+        url: ${BUCKET_URL}
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+          middlewares:
+            - name: auth
+        tls:
+          - hosts:
+            - ftp.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: ftp.${DOMAIN_0}
+            paths:
+            - path: /
+              pathType: Prefix
+    persistence:
+      backupdirectory:
+        enabled: true
+        mountPath: /srv/sftpgo/backups
+        volsync:
+          - credentials: backblaze
+            name: bkp
+            src:
+              enabled: true
+            type: restic
+      configpath:
+        enabled: true
+        mountPath: /var/lib/sftpgo
+        volsync:
+          - credentials: backblaze
+            name: cfg
+            src:
+              enabled: true
+            type: restic
+      data:
+        enabled: true
+        mountPath: /srv/sftpgo/data
+        volsync:
+          - credentials: backblaze
+            name: dat
+            src:
+              enabled: true
+            type: restic
+      shareaccess:
+        enabled: true
+        mountPath: /shareaccess
+        volsync:
+          - credentials: backblaze
+            name: sha
+            src:
+              enabled: true
+            type: restic
+      userdata:
+        enabled: true
+        type: nfs
+        mountPath: /data
+        path: ${DATASET_MEDIA}/temp/sftpgo
+        server: ${NFS_SERVER_0}
+      roms:
+        enabled: true
+        type: nfs
+        mountPath: /roms
+        path: ${DATASET_MEDIA}/library/games
+        server: ${NFS_SERVER_0}
+      wordpress:
+        enabled: true
+        type: nfs
+        mountPath: /wordpress
+        path: ${DATASET_BACKUPS}/wordpress
+        server: ${NFS_SERVER_0}
+      archive:
+        enabled: true
+        type: nfs
+        mountPath: /archive
+        path: ${DATASET_MEDIA}/archive/concerts
+        server: ${NFS_SERVER_0}
+    securityContext:
+      container:
+        UMASK: "0022"
+        runAsUser: 0
+      pod:
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      ftpport:
+        enabled: true
+        ports:
+          ftpport:
+            enabled: true
+            port: 2121
+            protocol: http
+            targetPort: 2121
+        type: LoadBalancer
+      main:
+        enabled: true
+        ports:
+          main:
+            port: 2221
+            protocol: http
+            targetPort: 8080
+        type: ClusterIP
+      passiveports:
+        enabled: true
+        ports:
+          passiveports:
+            enabled: true
+            port: 50000
+            protocol: http
+            targetPort: 50000
+        type: LoadBalancer
+      sftpport:
+        enabled: true
+        ports:
+          sftpport:
+            enabled: true
+            port: 2022
+            protocol: tcp
+            targetPort: 2022
+        type: LoadBalancer
+      webdavport:
+        enabled: true
+        ports:
+          webdavport:
+            enabled: true
+            port: 10080
+            protocol: tcp
+            targetPort: 10080
+        type: LoadBalancer
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                SFTPGO_COMMON__DEFENDER__ENABLED: "true"
+                SFTPGO_FTPD__BINDINGS__0__DEBUG: "0"
+                SFTPGO_FTPD__BINDINGS__0__FORCE_PASSIVE_IP: 10.0.0.10
+                SFTPGO_FTPD__BINDINGS__0__PORT: "2121"
+                SFTPGO_FTPD__PASSIVE_PORT_RANGE__END: "50100"
+                SFTPGO_FTPD__PASSIVE_PORT_RANGE__START: "50000"
+                SFTPGO_PLUGIN_AUTH_CA_CERTIFICATES: "0"
+                SFTPGO_PLUGIN_AUTH_CACHE_TIME: "0"
+                SFTPGO_PLUGIN_AUTH_LDAP_BASE_DN: dc=mylab,dc=local
+                SFTPGO_PLUGIN_AUTH_LDAP_BIND_DN: cn=Administrator,cn=users,dc=mylab,dc=local
+                SFTPGO_PLUGIN_AUTH_LDAP_GROUP_ATTRIBUTES: memberOf
+                SFTPGO_PLUGIN_AUTH_LDAP_PASSWORD: ${SFTPGO_PLUGIN_AUTH_LDAP_PASSWORD}
+                SFTPGO_PLUGIN_AUTH_LDAP_SEARCH_QUERY: (&(objectClass=user)(sAMAccountType=805306368)(sAMAccountName=%username%))
+                SFTPGO_PLUGIN_AUTH_LDAP_URL: ldap://lldap-ldap.ix-lldap.svc.cluster.local
+                SFTPGO_PLUGIN_AUTH_MEMBERSHIP_GROUP_PREFIX: ""
+                SFTPGO_PLUGIN_AUTH_PRIMARY_GROUP_PREFIX: ""
+                SFTPGO_PLUGIN_AUTH_REQUIRE_GROUPS: ""
+                SFTPGO_PLUGIN_AUTH_SECONDARY_GROUP_PREFIX: ""
+                SFTPGO_PLUGIN_AUTH_SKIP_TLS_VERIFY: "0"
+                SFTPGO_PLUGIN_AUTH_STARTTLS: "0"
+                SFTPGO_PLUGIN_AUTH_USERS_BASE_DIR: /mnt/home
+                SFTPGO_PLUGIN_EVENTSEARCH_DRIVER: ""
+                SFTPGO_PLUGIN_EVENTSEARCH_DSN: ""
+                SFTPGO_PLUGIN_EVENTSTORE_DRIVER: ""
+                SFTPGO_PLUGIN_EVENTSTORE_DSN: ""
+                SFTPGO_PLUGIN_EVENTSTORE_INSTANCE_ID: ""
+                SFTPGO_PLUGIN_EVENTSTORE_RETENTION: "0"
+                SFTPGO_PLUGIN_GEOIPFILTER_ALLOWED_COUNTRIES: JP
+                SFTPGO_PLUGIN_GEOIPFILTER_DB_FILE: /mnt/database/geolite.db
+                SFTPGO_PLUGIN_GEOIPFILTER_DENIED_COUNTRIES: KP
+                SFTPGO_WEBDAVD__BINDINGS__0__PORT: "10080"
+        replicas: 1
+        type: Deployment

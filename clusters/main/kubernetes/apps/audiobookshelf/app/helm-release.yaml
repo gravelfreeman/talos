@@ -1,0 +1,103 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: audiobookshelf
+  namespace: audiobookshelf
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: audiobookshelf
+      version: 10.1.3
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  values:
+    credentials:
+      backblaze:
+        accessKey: ${BUCKET_ACCESSKEY}
+        bucket: ${BUCKET_NAME}
+        encrKey: ${BUCKET_ENCRKEY}
+        name: backblaze
+        path: ""
+        secretKey: ${BUCKET_SECRETKEY}
+        type: s3
+        url: ${BUCKET_URL}
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+          middlewares:
+            - name: auth
+        tls:
+          - hosts:
+            - audio.${DOMAIN_1}
+            clusterIssuer: domain-1-wildcard
+        hosts:
+          - host: audio.${DOMAIN_1}
+            paths:
+            - path: /
+              pathType: Prefix
+    persistence:
+      audiobooks:
+        enabled: true
+        type: nfs
+        mountPath: /audiobooks
+        path: audio.${DOMAIN_1}
+        server: ${NFS_SERVER_0}
+      config:
+        enabled: true
+        mountPath: /config
+        volsync:
+          - credentials: backblaze
+            name: cfg
+            src:
+              enabled: true
+            type: restic
+      metadata:
+        enabled: true
+        mountPath: /metadata
+        volsync:
+          - credentials: backblaze
+            name: mtd
+            src:
+              enabled: true
+            type: restic
+    securityContext:
+      container:
+        UMASK: "0022"
+        runAsUser: 0
+      pod:
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      main:
+        enabled: true
+        ports:
+          main:
+            port: 10223
+        type: ClusterIP
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                AUDIOBOOKSHELF_GID: '{{ .Values.securityContext.pod.fsGroup }}'
+                AUDIOBOOKSHELF_UID: '{{ .Values.securityContext.container.PUID }}'
+                PORT: '{{ .Values.service.main.ports.main.port }}'
+                TOKEN_SECRET:
+                  secretKeyRef:
+                    key: TOKEN_SECRET
+                    name: secrets
+              probes:
+                liveness:
+                  path: /ping
+                readiness:
+                  path: /ping
+                startup:
+                  path: /ping
+        replicas: 1
+        type: Deployment
