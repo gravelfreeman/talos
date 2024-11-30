@@ -1,4 +1,10 @@
 age.agekey
+*talconfig.json
+talconfig.json
+patches/sopssecret.yaml
+*patches/sopssecret.yaml
+*patches/all.yaml
+patches/all.yaml
 ^clustertool.exe
 ^clustertool*
 ^clustertool
@@ -8,4 +14,9 @@ clustertool
 sopssecret.yaml
 sopssecret*
 *sopssecret*
+sopsscret.secret.yaml
+sopssecret.secret.yaml
 mounts/
+kubeconfig
+ssh-public-key.txt
+.decrypted~*.yaml

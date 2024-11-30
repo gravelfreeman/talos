@@ -49,6 +49,8 @@ spec:
             middlewares:
               - name: auth
                 namespace: traefik
+              - name: traefik-dashboard
+                namespace: traefik
         tls:
           - hosts:
             - traefik.${DOMAIN_0}
@@ -64,7 +66,7 @@ spec:
             - 172.1.0.0/12
       # DASHBOARD
       redirectRegex:
-        - name: traefik-dash
+        - name: traefik-dashboard
           regex: https://traefik\.${DOMAIN_0}/?$
           replacement: https://traefik.${DOMAIN_0}/dashboard/#/
           permanent: true

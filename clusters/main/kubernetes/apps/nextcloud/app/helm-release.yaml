@@ -1,0 +1,125 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: nextcloud
+      version: 30.1.25
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+
+    cnpg:
+      main:
+        mode: recovery
+        database: nextcloud
+        user: nextcloud
+        password: ${CNPG_PASSWORD_NEXTCLOUD}
+        pgVersion: 16
+        backups:
+          enabled: true
+          revision: "1"
+          credentials: backblaze
+        recovery:
+          method: object_store
+          credentials: backblaze
+    
+    nextcloud:
+      credentials:
+        initialAdminUser: ${USER_10}
+        initialAdminPassword: ${NEXTCLOUD_PASSWORD}
+      general:
+        accessIP: ${TRAEFIK_IP}
+        default_phone_region: CA
+      files:
+        shared_folder_name: Partage
+      previews:
+        providers:
+          - BMP
+          - GIF
+          - JPEG
+          - Krita
+          - MarkDown
+          - MP3
+          - OpenDocument
+          - PNG
+          - TXT
+          - XBitmap
+      clamav:
+        enabled: true
+      collabora:
+        enabled: true
+        username: ${USER_10}
+        password: ${COLLABORA_PASSWORD}
+        dictionaries:
+          - en_US
+          - fr_FR
+
+    persistence:
+      config:
+        volsync:
+          - name: cfg
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      html:
+        volsync:
+          - name: htm
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      data:
+        enabled: true
+        type: nfs
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_CLOUD}
+    
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+        tls:
+          - hosts:
+            - cloud.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: cloud.${DOMAIN_0}
+            paths:
+              - path: /
+                pathType: Prefix
