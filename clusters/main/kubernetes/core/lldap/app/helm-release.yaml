@@ -30,6 +30,9 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    global:
+      stopAll: false
+    
     credentials:
       backblaze:
         type: s3
@@ -86,6 +89,6 @@ spec:
               env:
                 LLDAP_HTTP_URL: https://lldap.${DOMAIN_0}
                 LLDAP_LDAP_BASE_DN: dc=${USER_10},dc=${DOMAIN_TLD_0}
-                LLDAP_LDAP_USER_DN: ${USER_10}
+                LDAP_USER_DN: ${LDAP_USER_DN}
                 LLDAP_LDAP_USER_EMAIL: ${LDAP_USER_EMAIL}
                 LLDAP_LDAP_USER_PASS: ${LDAP_USER_PASS}

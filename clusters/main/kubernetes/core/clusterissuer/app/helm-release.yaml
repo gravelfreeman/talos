@@ -35,6 +35,7 @@ spec:
         enabled: true
         name: "selfsigned"
       ACME:
+        # DOMAIN_0
         - name: domain-0-le-staging
           email: "${DOMAIN_0_EMAIL}"
           server: 'https://acme-staging-v02.api.letsencrypt.org/directory'
@@ -45,6 +46,7 @@ spec:
           server: 'https://acme-v02.api.letsencrypt.org/directory'
           type: "cloudflare"
           cfapitoken: "${DOMAIN_0_CLOUDFLARE_TOKEN}"
+        # DOMAIN_1
         - name: domain-1-le-staging
           email: "${DOMAIN_1_EMAIL}"
           server: 'https://acme-staging-v02.api.letsencrypt.org/directory'
@@ -55,6 +57,7 @@ spec:
           server: 'https://acme-v02.api.letsencrypt.org/directory'
           type: "cloudflare"
           cfapitoken: "${DOMAIN_1_CLOUDFLARE_TOKEN}"
+        # DOMAIN_2
         - name: domain-2-le-staging
           email: "${DOMAIN_2_EMAIL}"
           server: 'https://acme-staging-v02.api.letsencrypt.org/directory'

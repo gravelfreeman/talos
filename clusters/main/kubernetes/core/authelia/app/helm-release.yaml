@@ -28,6 +28,9 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    global:
+      stopAll: false
+    
     credentials:
       backblaze:
         type: s3
@@ -77,7 +80,7 @@ spec:
         additional_users_dn: ou=people
         users_filter: (&({username_attribute}={input})(objectClass=person))
         groups_filter: (member={dn})
-        user: uid=${USER_10},ou=people,dc=${USER_10},dc=${DOMAIN_TLD_0}
+        user: uid=${LDAP_USER_DN},ou=people,dc=${USER_10},dc=${DOMAIN_TLD_0}
         plain_password: ${LDAP_PLAIN_PASSWORD}
       file:
         enabled: false

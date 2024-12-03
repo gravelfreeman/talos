@@ -1,16 +1,14 @@
----
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: homepage
-  namespace: homepage
+  name: radarr
+  namespace: radarr
 spec:
   interval: 15m
   chart:
     spec:
-      chart: homepage
-      version: 9.3.4
+      chart: radarr
+      version: 22.2.4
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -41,7 +39,7 @@ spec:
         accessKey: ${BUCKET_ACCESSKEY}
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
-
+    
     ingress:
       main:
         enabled: true
@@ -51,17 +49,29 @@ spec:
             middlewares:
               - name: auth
                 namespace: traefik
+              - name: theme-radarr
+                namespace: traefik
         tls:
           - hosts:
-            - root.${DOMAIN_0}
-            clusterIssuer: domain-0-wildcard
+            - radarr.${DOMAIN_1}
+            clusterIssuer: domain-1-wildcard
         hosts:
-          - host: root.${DOMAIN_0}
-
+          - host: radarr.${DOMAIN_1}
+            paths:
+              - path: /
+                pathType: Prefix
+    
     persistence:
       config:
         enabled: true
-        mountPath: /app/config
+        targetSelector:
+          main:
+            main:
+              mountPath: /config
+          exportarr:
+            exportarr:
+              mountPath: /config
+              readOnly: true
         volsync:
           - name: cfg
             type: restic
@@ -70,32 +80,9 @@ spec:
               enabled: true
             src:
               enabled: true
-      public:
+      media:
         enabled: true
-        mountPath: /app/public/images
-        volsync:
-          - name: img
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-
-    addons:
-      codeserver:
-        enabled: true
-        ingress:
-          enabled: true
-          integrations:
-            traefik:
-              enabled: true
-              middlewares:
-                - name: auth
-                  namespace: traefik
-          tls:
-            - hosts:
-              - root.cs.${DOMAIN_0}
-              clusterIssuer: domain-0-cs-wildcard
-          hosts:
-            - host: root.cs.${DOMAIN_0}
+        type: nfs
+        mountPath: /media
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_MEDIA}

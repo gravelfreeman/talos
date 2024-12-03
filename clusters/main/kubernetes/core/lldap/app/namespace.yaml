@@ -4,5 +4,6 @@ metadata:
     name: lldap
     labels:
         pod-security.kubernetes.io/enforce: privileged
+        topolvm.io/webhook: ignore
     annotations:
         volsync.backube/privileged-movers: "true"
