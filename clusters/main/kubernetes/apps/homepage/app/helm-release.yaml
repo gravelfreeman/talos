@@ -60,8 +60,6 @@ spec:
 
     persistence:
       config:
-        enabled: true
-        mountPath: /app/config
         volsync:
           - name: cfg
             type: restic
@@ -81,7 +79,7 @@ spec:
               enabled: true
             src:
               enabled: true
-
+    
     addons:
       codeserver:
         enabled: true
