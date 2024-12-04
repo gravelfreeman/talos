@@ -70,8 +70,6 @@ spec:
 
     persistence:
       data:
-        enabled: true
-        mountPath: "/data"
         volsync:
           - name: cfg
             type: restic
