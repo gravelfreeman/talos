@@ -1,0 +1,83 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: readarr
+  namespace: readarr
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: readarr
+      version: 22.0.12
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+      interval: 15m
+  timeout: 20m
+  maxHistory: 3
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    global:
+      stopAll: false
+
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+        
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+            middlewares:
+              - name: auth
+                namespace: traefik
+              - name: theme-readarr
+                namespace: traefik
+        tls:
+          - hosts:
+            - readarr.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: readarr.${DOMAIN_0}
+
+    persistence:
+      config:
+        volsync:
+          - name: cfg
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      media:
+        enabled: true
+        type: nfs
+        mountPath: /media
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_MEDIA}/library/books
+      downloads:
+        enabled: true
+        type: nfs
+        mountPath: /downloads
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_MEDIA}/temp/downloads/books
