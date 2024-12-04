@@ -33,7 +33,6 @@ spec:
   values:
     global:
       stopAll: false
-    
 
     defaultCertificate: "domain-0-wildcard"
 
@@ -48,8 +47,8 @@ spec:
           traefik:
             enabled: true
             middlewares:
-              - name: auth
-                namespace: traefik
+              - name: auth 
+                namespace: traefik 
               - name: traefik-dashboard
                 namespace: traefik
         tls:
@@ -83,47 +82,47 @@ spec:
           trustForwardHeader: true
       # THEME-PARK
       themePark:
-        - name: qb1-theme
+        - name: theme-qb1
           appName: "qbittorrent"
           themeName : "overseerr"
           baseUrl: https://theme-park.dev
-        - name: qb2-theme
+        - name: theme-qb2
           appName: "qbittorrent"
           themeName : "aquamarine"
           baseUrl: https://theme-park.dev
-        - name: qb3-theme
+        - name: theme-qb3
           appName: "qbittorrent"
           themeName : "dracula"
           baseUrl: https://theme-park.dev
-        - name: qb4-theme
+        - name: theme-qb4
           appName: "qbittorrent"
           themeName : "maroon"
           baseUrl: https://theme-park.dev
-        - name: sabnzbd-theme
+        - name: theme-sabnzbd
           appName: "sabnzbd"
           themeName : "overseerr"
           baseUrl: https://theme-park.dev
-        - name: sonarr-theme
+        - name: theme-sonarr
           appName: "sonarr"
           themeName : "overseerr"
           baseUrl: https://theme-park.dev
-        - name: radarr-theme
+        - name: theme-radarr
           appName: "radarr"
           themeName : "overseerr"
           baseUrl: https://theme-park.dev
-        - name: lidarr-theme
+        - name: theme-lidarr
           appName: "lidarr"
           themeName : "overseerr"
           baseUrl: https://theme-park.dev
-        - name: readarr-theme
+        - name: theme-readarr
           appName: "readarr"
           themeName : "overseerr"
           baseUrl: https://theme-park.dev
-        - name: prowlarr-theme
+        - name: theme-prowlarr
           appName: "prowlarr"
           themeName : "overseerr"
           baseUrl: https://theme-park.dev
-        - name: bazarr-theme
+        - name: theme-bazarr
           appName: "bazarr"
           themeName : "overseerr"
           baseUrl: https://theme-park.dev
