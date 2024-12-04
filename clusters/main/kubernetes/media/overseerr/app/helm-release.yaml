@@ -1,3 +1,5 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -29,7 +31,7 @@ spec:
     keepHistory: false
   values:
     global:
-      stopAll: false
+      stopAll: true
     
     credentials:
       backblaze:
@@ -49,21 +51,24 @@ spec:
             certificateIssuer: domain-1-le-prod
           traefik:
             enabled: true
-            middlewares:
-              - name: auth
-                namespace: traefik
         hosts:
           - host: ${DOMAIN_1}
-            paths:
-              - path: /
-                pathType: Prefix
     
     persistence:
       config:
-        enabled: true
-        mountPath: /app/config
         volsync:
           - name: cfg
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      public:
+        enabled: true
+        mountPath: /app/public
+        volsync:
+          - name: pub
             type: restic
             credentials: backblaze
             dest:
