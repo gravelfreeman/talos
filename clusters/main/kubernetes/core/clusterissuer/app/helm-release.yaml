@@ -36,33 +36,39 @@ spec:
         name: "selfsigned"
       ACME:
         # DOMAIN_0
+
         - name: domain-0-le-staging
           email: "${DOMAIN_0_EMAIL}"
           server: 'https://acme-staging-v02.api.letsencrypt.org/directory'
           type: "cloudflare"
           cfapitoken: "${DOMAIN_0_CLOUDFLARE_TOKEN}"
+
         - name: domain-0-le-prod
           email: "${DOMAIN_0_EMAIL}"
           server: 'https://acme-v02.api.letsencrypt.org/directory'
           type: "cloudflare"
           cfapitoken: "${DOMAIN_0_CLOUDFLARE_TOKEN}"
+
         # DOMAIN_1
         - name: domain-1-le-staging
           email: "${DOMAIN_1_EMAIL}"
           server: 'https://acme-staging-v02.api.letsencrypt.org/directory'
           type: "cloudflare"
           cfapitoken: "${DOMAIN_1_CLOUDFLARE_TOKEN}"
+
         - name: domain-1-le-prod
           email: "${DOMAIN_1_EMAIL}"
           server: 'https://acme-v02.api.letsencrypt.org/directory'
           type: "cloudflare"
           cfapitoken: "${DOMAIN_1_CLOUDFLARE_TOKEN}"
+
         # DOMAIN_2
         - name: domain-2-le-staging
           email: "${DOMAIN_2_EMAIL}"
           server: 'https://acme-staging-v02.api.letsencrypt.org/directory'
           type: "cloudflare"
           cfapitoken: "${DOMAIN_2_CLOUDFLARE_TOKEN}"
+          
         - name: domain-2-le-prod
           email: "${DOMAIN_2_EMAIL}"
           server: 'https://acme-v02.api.letsencrypt.org/directory'
@@ -72,6 +78,7 @@ spec:
     clusterCertificates:
       replicationNamespaces: '.*'
       certificates:
+
         # DOMAIN 0 WILDCARD
         - name: domain-0-wildcard
           enabled: true
@@ -79,17 +86,19 @@ spec:
           hosts:
             - '*.${DOMAIN_0}'
             - '*.cs.${DOMAIN_0}'
+
         # DOMAIN 1 WILDCARD
         - name: domain-1-wildcard
           enabled: true
           certificateIssuer: domain-1-le-prod
           hosts:
-            - ${DOMAIN_1}
+            - '${DOMAIN_1}'
             - '*.${DOMAIN_1}'
+
         # DOMAIN 2 WILDCARD
         - name: domain-2-wildcard
           enabled: true
           certificateIssuer: domain-2-le-prod
           hosts:
-            - ${DOMAIN_2}
+            - '${DOMAIN_2}'
             - '*.${DOMAIN_2}'
