@@ -1,0 +1,139 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sabnzbd
+  namespace: sabnzbd
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: sabnzbd
+      version: 20.1.5
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+      interval: 15m
+  postRenderers:
+  - kustomize:
+      patches:
+        - target:
+            version: v1
+            kind: Deployment
+            name: sabnzbd
+          patch: |
+            - op: add
+              path: /spec/template/spec/containers/1/resources/limits/truecharts.org~1tun
+              value: 1
+  timeout: 20m
+  maxHistory: 3
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    global:
+      stopAll: false
+    
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+
+    service: 
+      proxy:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: ${LOAD_BALANCER_SABNZBD}
+        ports:
+          proxy:
+            enabled: true
+            port: ${HTTPPROXY_LISTENING_ADDRESS}
+            protocol: http
+            targetPort: ${HTTPPROXY_LISTENING_ADDRESS}
+      socks:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: ${LOAD_BALANCER_SABNZBD}
+        ports:
+          socks:
+            enabled: true
+            port: ${SHADOWSOCKS_LISTENING_ADDRESS}
+            protocol: tcp
+            targetPort: ${SHADOWSOCKS_LISTENING_ADDRESS}
+
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+            middlewares:
+              - name: auth
+                namespace: traefik
+              - name: theme-sabnzbd
+                namespace: traefik
+        tls:
+          - hosts:
+            - nzb.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: nzb.${DOMAIN_0}
+
+    persistence:
+      config:
+        volsync:
+          - name: cfg
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      media:
+        enabled: true
+        type: nfs
+        mountPath: /media
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_MEDIA}
+
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                SABNZBD__HOST_WHITELIST_ENTRIES: nzb.${DOMAIN_0}
+
+    addons:
+      vpn:
+        type: gluetun
+        killSwitch: true
+        excludedNetworks_IPv4:
+          - ${EXCLUDED_IPV4_0}
+        env:
+          # VPN
+          VPN_TYPE: wireguard
+          VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER_0}
+          WIREGUARD_PUBLIC_KEY: ${WIREGUARD_PUBLIC_KEY_NZB}
+          WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY_NZB}
+          WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_0}
+          VPN_ENDPOINT_IP: ${VPN_ENDPOINT_IP_NZB}
+          VPN_ENDPOINT_PORT: ${VPN_ENDPOINT_PORT_NZB}
+          # PROXY
+          HTTPPROXY: on
+          HTTPPROXY_LOG: on
+          SHADOWSOCKS: on
+          SHADOWSOCKS_LOG: on
