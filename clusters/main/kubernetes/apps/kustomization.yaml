@@ -5,4 +5,5 @@ resources:
   - whisper-asr-webservice/ks.yaml
   - nextcloud/ks.yaml
   - immich/ks.yaml
+  - dell-idrac-fan-controller/ks.yaml
   - thelounge/ks.yaml
