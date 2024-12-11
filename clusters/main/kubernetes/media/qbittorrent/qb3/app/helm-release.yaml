@@ -53,7 +53,7 @@ spec:
         encrKey: ${BUCKET_ENCRKEY}
 
     qbitportforward:
-      enabled: true
+      enabled: false
       QBT_USERNAME: ${QBT_USERNAME}
       QBT_PASSWORD: ${QBT_PASSWORD}
 
@@ -62,16 +62,16 @@ spec:
         ports:
           torrent:
             port: "${TORRENT_PORT_QB3}"
-      gluetun:
-        enabled: true
-        type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_QB3}
-        ports:
-          gluetun:
-            enabled: true
-            port: ${SERVICE_PORT_PROXY}
-            protocol: http
-            targetPort: ${SERVICE_PORT_PROXY}
+      # gluetun:
+      #   enabled: true
+      #   type: LoadBalancer
+      #   loadBalancerIP: ${LOAD_BALANCER_QB3}
+      #   ports:
+      #     gluetun:
+      #       enabled: true
+      #       port: ${SERVICE_PORT_PROXY}
+      #       protocol: http
+      #       targetPort: ${SERVICE_PORT_PROXY}
       # socks:
       #   enabled: true
       #   type: LoadBalancer
