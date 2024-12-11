@@ -57,31 +57,20 @@ spec:
       QBT_USERNAME: ${QBT_USERNAME}
       QBT_PASSWORD: ${QBT_PASSWORD}
 
-    service: 
+    service:
       torrent:
         ports:
           torrent:
             port: "${TORRENT_PORT_QB1}"
-      proxy:
+      gluetun:
         enabled: true
         type: ClusterIP
-        # loadBalancerIP: ${LOAD_BALANCER_QB1}
         ports:
-          gluetun:  
+          gluetun:
             enabled: true
+            protocol: "http"
             port: 8888
-            protocol: http
             targetPort: 8888
-      # socks:
-      #   enabled: true
-      #   type: LoadBalancer
-      #   loadBalancerIP: ${LOAD_BALANCER_QB1}
-      #   ports:
-      #     socks:
-      #       enabled: true
-      #       port: ${SERVICE_PORT_SOCKS}
-      #       protocol: tcp
-      #       targetPort: ${SERVICE_PORT_SOCKS}
 
     ingress:
       main:
@@ -137,5 +126,3 @@ spec:
           # PROXY
           HTTPPROXY: on
           HTTPPROXY_LOG: on
-          SHADOWSOCKS: on
-          SHADOWSOCKS_LOG: on
