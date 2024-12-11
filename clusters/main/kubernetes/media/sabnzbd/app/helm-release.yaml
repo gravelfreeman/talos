@@ -56,23 +56,23 @@ spec:
       proxy:
         enabled: true
         type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_SABNZBD}
+        loadBalancerIP: ${LOAD_BALANCER_NZB}
         ports:
           proxy:
             enabled: true
-            port: ${HTTPPROXY_LISTENING_ADDRESS}
             protocol: http
-            targetPort: ${HTTPPROXY_LISTENING_ADDRESS}
+            targetPort: 8888
+            port: 8888
       socks:
         enabled: true
         type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_SABNZBD}
+        loadBalancerIP: ${LOAD_BALANCER_NZB}
         ports:
           socks:
             enabled: true
-            port: ${SHADOWSOCKS_LISTENING_ADDRESS}
             protocol: tcp
-            targetPort: ${SHADOWSOCKS_LISTENING_ADDRESS}
+            targetPort: 8388
+            port: 8388
 
     ingress:
       main:
@@ -122,17 +122,17 @@ spec:
         type: gluetun
         killSwitch: true
         excludedNetworks_IPv4:
-          - ${EXCLUDED_IPV4_0}
+          - 10.0.0.0/8
         env:
-          # VPN
           VPN_TYPE: wireguard
-          VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER_0}
+          VPN_SERVICE_PROVIDER: custom
+          WIREGUARD_ENDPOINT_IP: 172.98.82.146
+          WIREGUARD_ENDPOINT_PORT: 51820
           WIREGUARD_PUBLIC_KEY: ${WIREGUARD_PUBLIC_KEY_NZB}
           WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY_NZB}
-          WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_0}
-          VPN_ENDPOINT_IP: ${VPN_ENDPOINT_IP_NZB}
-          VPN_ENDPOINT_PORT: ${VPN_ENDPOINT_PORT_NZB}
-          # PROXY
+          WIREGUARD_ADDRESSES: 10.2.0.2/32
+          FIREWALL_INPUT_PORTS: 8000,8888,8388,10097
+          DNS_KEEP_NAMESERVER: off
           HTTPPROXY: on
           HTTPPROXY_LOG: on
           SHADOWSOCKS: on

@@ -53,7 +53,7 @@ spec:
         encrKey: ${BUCKET_ENCRKEY}
 
     qbitportforward:
-      enabled: true
+      enabled: false
       QBT_USERNAME: ${QBT_USERNAME}
       QBT_PASSWORD: ${QBT_PASSWORD}
 
@@ -62,15 +62,26 @@ spec:
         ports:
           torrent:
             port: "${TORRENT_PORT_QB1}"
-      gluetun:
+      proxy:
         enabled: true
-        type: ClusterIP
+        type: LoadBalancer
+        loadBalancerIP: ${LOAD_BALANCER_QB1}
         ports:
-          gluetun:
+          proxy:
             enabled: true
-            protocol: "http"
-            port: 8888
+            protocol: http
             targetPort: 8888
+            port: 8888
+      socks:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: ${LOAD_BALANCER_QB1}
+        ports:
+          socks:
+            enabled: true
+            protocol: tcp
+            targetPort: 8388
+            port: 8388
 
     ingress:
       main:
@@ -112,17 +123,20 @@ spec:
         type: gluetun
         killSwitch: true
         excludedNetworks_IPv4:
-          - ${EXCLUDED_IPV4_0}
+          - 10.0.0.0/8
         env:
-          # VPN
           VPN_TYPE: wireguard
-          VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER_0}
+          VPN_SERVICE_PROVIDER: custom
+          VPN_PORT_FORWARDING: on
+          VPN_PORT_FORWARDING_PROVIDER: protonvpn
+          WIREGUARD_ENDPOINT_IP: 149.22.82.55
+          WIREGUARD_ENDPOINT_PORT: 51820
           WIREGUARD_PUBLIC_KEY: ${WIREGUARD_PUBLIC_KEY_QB1}
           WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY_QB1}
-          WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_0}
-          VPN_ENDPOINT_IP: ${VPN_ENDPOINT_IP_QB1}
-          VPN_ENDPOINT_PORT: ${VPN_ENDPOINT_PORT_0}
-          FIREWALL_INPUT_PORTS: 10095,8888
-          # PROXY
+          WIREGUARD_ADDRESSES: 10.2.0.2/32
+          FIREWALL_INPUT_PORTS: 8000,8888,8388,10095
+          DNS_KEEP_NAMESERVER: off
           HTTPPROXY: on
           HTTPPROXY_LOG: on
+          SHADOWSOCKS: on
+          SHADOWSOCKS_LOG: on
