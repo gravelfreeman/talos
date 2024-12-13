@@ -16,17 +16,17 @@ spec:
         name: truecharts
         namespace: flux-system
       interval: 15m
-  postRenderers:
-  - kustomize:
-      patches:
-        - target:
-            version: v1
-            kind: Deployment
-            name: autobrr
-          patch: |
-            - op: add
-              path: /spec/template/spec/containers/1/resources/limits/truecharts.org~1tun
-              value: 1
+  # postRenderers:
+  # - kustomize:
+  #     patches:
+  #       - target:
+  #           version: v1
+  #           kind: Deployment
+  #           name: autobrr
+  #         patch: |
+  #           - op: add
+  #             path: /spec/template/spec/containers/1/resources/limits/truecharts.org~1tun
+  #             value: 1
   timeout: 20m
   maxHistory: 3
   install:
@@ -85,18 +85,18 @@ spec:
         server: ${NFS_SERVER_0}
         path: ${DATASET_MEDIA}/temp/joal
 
-    addons:
-      vpn:
-        type: gluetun
-        killSwitch: true
-        excludedNetworks_IPv4:
-          - ${EXCLUDED_IPV4_0}
-        env:
-          VPN_TYPE: wireguard
-          VPN_SERVICE_PROVIDER: custom
-          WIREGUARD_PUBLIC_KEY: ${WIREGUARD_PUBLIC_KEY_0}
-          WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY_0}
-          WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_0}
-          DNS_ADDRESS: ${DNS_ADDRESS_0}
-          VPN_ENDPOINT_IP: ${VPN_ENDPOINT_IP_0}
-          VPN_ENDPOINT_PORT: ${VPN_ENDPOINT_PORT_0}
+    # addons:
+    #   vpn:
+    #     type: gluetun
+    #     killSwitch: true
+    #     excludedNetworks_IPv4:
+    #       - ${EXCLUDED_IPV4_0}
+    #     env:
+    #       VPN_TYPE: wireguard
+    #       VPN_SERVICE_PROVIDER: custom
+    #       WIREGUARD_PUBLIC_KEY: ${WIREGUARD_PUBLIC_KEY_0}
+    #       WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY_0}
+    #       WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_0}
+    #       DNS_ADDRESS: ${DNS_ADDRESS_0}
+    #       VPN_ENDPOINT_IP: ${VPN_ENDPOINT_IP_0}
+    #       VPN_ENDPOINT_PORT: ${VPN_ENDPOINT_PORT_0}
