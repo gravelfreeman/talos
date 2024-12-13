@@ -76,3 +76,9 @@ spec:
         mountPath: /media
         server: ${NFS_SERVER_0}
         path: ${DATASET_MEDIA}
+      overseerr:
+        enabled: true
+        type: nfs
+        mountPath: /overseerr
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_OVERSEERR}/overseerr
