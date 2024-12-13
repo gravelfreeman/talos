@@ -41,7 +41,7 @@ spec:
     keepHistory: false
   values:
     global:
-      stopAll: true
+      stopAll: false
     
     credentials:
       backblaze:
@@ -53,35 +53,31 @@ spec:
         encrKey: ${BUCKET_ENCRKEY}
 
     qbitportforward:
-      enabled: false
+      enabled: true
       QBT_USERNAME: ${QBT_USERNAME}
       QBT_PASSWORD: ${QBT_PASSWORD}
 
-    service: 
-      torrent:
+    service:
+      proxy:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: ${LOAD_BALANCER_QB3}
         ports:
-          torrent:
-            port: "${TORRENT_PORT_QB3}"
-      # gluetun:
-      #   enabled: true
-      #   type: LoadBalancer
-      #   loadBalancerIP: ${LOAD_BALANCER_QB3}
-      #   ports:
-      #     gluetun:
-      #       enabled: true
-      #       port: ${SERVICE_PORT_PROXY}
-      #       protocol: http
-      #       targetPort: ${SERVICE_PORT_PROXY}
-      # socks:
-      #   enabled: true
-      #   type: LoadBalancer
-      #   loadBalancerIP: ${LOAD_BALANCER_QB3}
-      #   ports:
-      #     socks:
-      #       enabled: true
-      #       port: ${SERVICE_PORT_SOCKS}
-      #       protocol: tcp
-      #       targetPort: ${SERVICE_PORT_SOCKS}
+          proxy:
+            enabled: true
+            protocol: http
+            targetPort: ${PROXY_PORT}
+            port: ${PROXY_PORT}
+      socks:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: ${LOAD_BALANCER_QB3}
+        ports:
+          socks:
+            enabled: true
+            protocol: tcp
+            targetPort: ${SOCKS_PORT}
+            port: ${SOCKS_PORT}
         
     ingress:
       main:
@@ -125,16 +121,17 @@ spec:
         excludedNetworks_IPv4:
           - ${EXCLUDED_IPV4_0}
         env:
-          # VPN
           VPN_TYPE: wireguard
           VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER_0}
+          VPN_PORT_FORWARDING: on
+          VPN_PORT_FORWARDING_PROVIDER: ${VPN_SERVICE_PROVIDER_1}
+          WIREGUARD_ENDPOINT_IP: ${WIREGUARD_ENDPOINT_IP_QB3}
+          WIREGUARD_ENDPOINT_PORT: ${WIREGUARD_ENDPOINT_PORT_0}
           WIREGUARD_PUBLIC_KEY: ${WIREGUARD_PUBLIC_KEY_QB3}
           WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY_QB3}
-          WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_0}
-          VPN_ENDPOINT_IP: ${VPN_ENDPOINT_IP_QB3}
-          VPN_ENDPOINT_PORT: ${VPN_ENDPOINT_PORT_0}
-          FIREWALL_INPUT_PORTS: 10095,8888
-          # PROXY
+          WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_1}
+          FIREWALL_INPUT_PORTS: ${SERVER_PORT},${PROXY_PORT},${SOCKS_PORT},${QBT_PORT}
+          DNS_KEEP_NAMESERVER: off
           HTTPPROXY: on
           HTTPPROXY_LOG: on
           SHADOWSOCKS: on
