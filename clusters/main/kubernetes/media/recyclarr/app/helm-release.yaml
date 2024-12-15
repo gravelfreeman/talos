@@ -52,20 +52,20 @@ spec:
             src:
               enabled: true
 
-    addons:
-      codeserver:
-        enabled: true
-        ingress:
-          enabled: true
-          integrations:
-            traefik:
-              enabled: true
-              middlewares:
-                - name: auth
-                  namespace: traefik
-          tls:
-            - hosts:
-              - recyclarr.cs.${DOMAIN_0}
-              clusterIssuer: domain-0-cs-wildcard
-          hosts:
-            - host: recyclarr.cs.${DOMAIN_0}
+    # addons:
+    #   codeserver:
+    #     enabled: true
+    #     ingress:
+    #       enabled: true
+    #       integrations:
+    #         traefik:
+    #           enabled: true
+    #           middlewares:
+    #             - name: auth
+    #               namespace: traefik
+    #       tls:
+    #         - hosts:
+    #           - recyclarr.cs.${DOMAIN_0}
+    #           clusterIssuer: domain-0-cs-wildcard
+    #       hosts:
+    #         - host: recyclarr.cs.${DOMAIN_0}

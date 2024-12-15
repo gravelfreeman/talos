@@ -27,6 +27,25 @@ spec:
             - op: add
               path: /spec/template/spec/containers/1/resources/limits/truecharts.org~1tun
               value: 1
+        - target:
+            version: v1
+            kind: Deployment
+            name: qb1-qbittorrent
+          patch: |
+            - op: add
+              path: /spec/template/spec/containers/-
+              value:
+                name: socks5
+                image: serjs/go-socks5-proxy:latest
+                ports:
+                  - containerPort: ${SOCKS5_PORT}
+                    name: socks5
+                    protocol: TCP
+                env:
+                  - name: DEPENDS_ON
+                    value: gluetun
+                args:
+                  - -v
   timeout: 20m
   maxHistory: 3
   install:
@@ -78,6 +97,16 @@ spec:
             protocol: tcp
             targetPort: ${SOCKS_PORT}
             port: ${SOCKS_PORT}
+      socks5:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: ${LOAD_BALANCER_QB1}
+        ports:
+          socks5:
+            enabled: true
+            protocol: tcp
+            targetPort: ${SOCKS5_PORT}
+            port: ${SOCKS5_PORT}
 
     ingress:
       main:
@@ -130,7 +159,7 @@ spec:
           WIREGUARD_PUBLIC_KEY: ${WIREGUARD_PUBLIC_KEY_QB1}
           WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY_QB1}
           WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_1}
-          FIREWALL_INPUT_PORTS: ${SERVER_PORT},${PROXY_PORT},${SOCKS_PORT},${QBT_PORT}
+          FIREWALL_INPUT_PORTS: ${SERVER_PORT},${PROXY_PORT},${SOCKS_PORT},${SOCKS5_PORT},${QBT_PORT}
           DNS_KEEP_NAMESERVER: off
           HTTPPROXY: on
           HTTPPROXY_LOG: on

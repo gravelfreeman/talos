@@ -14,17 +14,6 @@ spec:
         name: truecharts
         namespace: flux-system
       interval: 15m
-  postRenderers:
-  - kustomize:
-      patches:
-        - target:
-            version: v1
-            kind: Deployment
-            name: thelounge
-          patch: |
-            - op: add
-              path: /spec/template/spec/containers/1/resources/limits/truecharts.org~1tun
-              value: 1
   timeout: 20m
   maxHistory: 3
   driftDetection:
@@ -63,33 +52,18 @@ spec:
             src:
               enabled: true
     
-    ingress:
-      main:
-        enabled: true
-        integrations:
-          traefik:
-            enabled: true
-            middlewares:
-              - name: auth
-                namespace: traefik
-        tls:
-          - hosts:
-            - irc.${DOMAIN_0}
-            clusterIssuer: domain-0-wildcard
-        hosts:
-          - host: irc.${DOMAIN_0}
-    
-    addons:
-      vpn:
-        type: gluetun
-        killSwitch: true
-        excludedNetworks_IPv4:
-          - ${EXCLUDED_IPV4_0}
-        env:
-          VPN_TYPE: wireguard
-          VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER_0}
-          WIREGUARD_PUBLIC_KEY: ${WIREGUARD_PUBLIC_KEY_8}
-          WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY_8}
-          WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_8}
-          VPN_ENDPOINT_IP: ${VPN_ENDPOINT_IP_8}
-          VPN_ENDPOINT_PORT: ${VPN_ENDPOINT_PORT_8}
+    # ingress:
+    #   main:
+    #     enabled: true
+    #     integrations:
+    #       traefik:
+    #         enabled: true
+    #         middlewares:
+    #           - name: auth
+    #             namespace: traefik
+    #     tls:
+    #       - hosts:
+    #         - irc.${DOMAIN_0}
+    #         clusterIssuer: domain-0-wildcard
+    #     hosts:
+    #       - host: irc.${DOMAIN_0}

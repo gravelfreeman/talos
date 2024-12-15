@@ -139,8 +139,17 @@ spec:
             - profile
             - email
             - groups
+            grant_types:
+            - authorization_code
+            - refresh_token
+            response_modes:
+            - form_post
+            - query
+            - fragment
+            response_types:
+            - code
             redirect_uris:
-            - 'https://cloud.${DOMAIN_0}/apps/oidc_login/oidc'
+            - https://cloud.${DOMAIN_0}/apps/oidc_login/oidc
             userinfo_signing_algorithm: none
             token_endpoint_auth_method: client_secret_basic
 

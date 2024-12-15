@@ -51,7 +51,29 @@ spec:
         accessKey: ${BUCKET_ACCESSKEY}
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
-    
+
+    # service:
+    #   proxy:
+    #     enabled: true
+    #     type: LoadBalancer
+    #     loadBalancerIP: ${LOAD_BALANCER_ABR}
+    #     ports:
+    #       proxy:
+    #         enabled: true
+    #         protocol: http
+    #         targetPort: ${PROXY_PORT}
+    #         port: ${PROXY_PORT}
+    #   socks:
+    #     enabled: true
+    #     type: LoadBalancer
+    #     loadBalancerIP: ${LOAD_BALANCER_ABR}
+    #     ports:
+    #       socks:
+    #         enabled: true
+    #         protocol: tcp
+    #         targetPort: ${SOCKS_PORT}
+    #         port: ${SOCKS_PORT}
+
     ingress:
       main:
         enabled: true
@@ -93,10 +115,15 @@ spec:
     #       - ${EXCLUDED_IPV4_0}
     #     env:
     #       VPN_TYPE: wireguard
-    #       VPN_SERVICE_PROVIDER: custom
-    #       WIREGUARD_PUBLIC_KEY: ${WIREGUARD_PUBLIC_KEY_0}
-    #       WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY_0}
-    #       WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_0}
-    #       DNS_ADDRESS: ${DNS_ADDRESS_0}
-    #       VPN_ENDPOINT_IP: ${VPN_ENDPOINT_IP_0}
-    #       VPN_ENDPOINT_PORT: ${VPN_ENDPOINT_PORT_0}
+    #       VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER_0}
+    #       WIREGUARD_ENDPOINT_IP: ${WIREGUARD_ENDPOINT_IP_ABR}
+    #       WIREGUARD_ENDPOINT_PORT: ${WIREGUARD_ENDPOINT_PORT_0}
+    #       WIREGUARD_PUBLIC_KEY: ${WIREGUARD_PUBLIC_KEY_ABR}
+    #       WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY_ABR}
+    #       WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_1}
+    #       FIREWALL_INPUT_PORTS: ${SERVER_PORT},${PROXY_PORT},${SOCKS_PORT},${AUTOBRR_PORT}
+    #       DNS_KEEP_NAMESERVER: off
+    #       HTTPPROXY: on
+    #       HTTPPROXY_LOG: on
+    #       SHADOWSOCKS: on
+    #       SHADOWSOCKS_LOG: on
