@@ -1,0 +1,118 @@
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: gluetun
+  namespace: gluetun
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 14.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+      interval: 15m
+  timeout: 20m
+  maxHistory: 3
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    global:
+      stopAll: false
+
+    image:
+      repository: docker.io/qmcgaw/gluetun
+      pullPolicy: IfNotPresent
+      tag: latest
+
+    securityContext:
+      container:
+        runAsUser: 0
+        runAsNonRoot: false
+        readOnlyRootFilesystem: false
+        runAsGroup: 568
+        capabilities:
+          add:
+            - NET_ADMIN
+            - NET_RAW
+            - MKNOD
+
+    service:
+      main:
+        ports:
+          main:
+            targetPort: 8000
+            port: 8000
+      proxy:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: ${LOAD_BALANCER_GLUETUN}
+        ports:
+          proxy:
+            enabled: true
+            protocol: http
+            targetPort: ${PROXY_PORT}
+            port: ${PROXY_PORT}
+      socks:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: ${LOAD_BALANCER_GLUETUN}
+        ports:
+          socks:
+            enabled: true
+            protocol: tcp
+            targetPort: ${SOCKS_PORT}
+            port: ${SOCKS_PORT}
+
+    volumes:
+      - name: dev-net-tun
+        hostPath:
+          path: /dev/net/tun
+          type: CharDevice
+
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              securityContext:
+                privileged: true
+              volumeMounts:
+                - name: dev-net-tun
+                  mountPath: /dev/net/tun
+              env:
+                HTTP_CONTROL_SERVER_ADDRESS: 
+                DNS_KEEP_NAMESERVER: "off"
+                DOT: "off"
+                FIREWALL: "on"
+                FIREWALL_OUTBOUND_SUBNETS: ${EXCLUDED_IPV4_0}
+                VPN_TYPE: wireguard
+                VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER_0}
+                WIREGUARD_ENDPOINT_IP: ${WIREGUARD_ENDPOINT_IP_GLUETUN}
+                WIREGUARD_ENDPOINT_PORT: ${WIREGUARD_ENDPOINT_PORT_2}
+                WIREGUARD_PUBLIC_KEY: ${WIREGUARD_PUBLIC_KEY_GLUETUN}
+                WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY_GLUETUN}
+                WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_2}
+                FIREWALL_INPUT_PORTS: ${SERVER_PORT},${PROXY_PORT},${SOCKS_PORT},${SOCKS5_PORT}
+                HTTPPROXY: "on"
+                HTTPPROXY_LOG: "on"
+                SHADOWSOCKS: "on"
+                SHADOWSOCKS_LOG: "on"
+              probes:
+                liveness:
+                  enabled: false
+                readiness:
+                  enabled: false
+                startup:
+                  enabled: false
