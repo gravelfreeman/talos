@@ -11,3 +11,4 @@ resources:
   - lldap/ks.yaml
   - external-dns-unifi/ks.yaml
   - authelia/ks.yaml
+  - flaresolverr/ks.yaml
