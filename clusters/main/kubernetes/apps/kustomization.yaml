@@ -7,3 +7,4 @@ resources:
   - immich/ks.yaml
   - dell-idrac-fan-controller/ks.yaml
   - thelounge/ks.yaml
+  - mealie/ks.yaml

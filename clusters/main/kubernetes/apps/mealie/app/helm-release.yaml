@@ -1,0 +1,112 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mealie
+  namespace: mealie
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: mealie
+      version: 22.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  values:
+    global:
+      stopAll: false
+    
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+
+    cnpg:
+      main:
+        mode: recovery
+        database: mealie
+        user: mealie
+        password: ${CNPG_PASSWORD_MEALIE}
+        pgVersion: 16
+        backups:
+          enabled: true
+          revision: "1"
+          credentials: backblaze
+        recovery:
+          method: object_store
+          credentials: backblaze
+
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+        tls:
+          - hosts:
+            - mealie.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: mealie.${DOMAIN_0}
+            paths:
+              - path: /
+                pathType: Prefix
+
+    persistence:
+      data:
+        volsync:
+          - name: dat
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+
+    mealie:
+      api:
+        general:
+          allow_signup: false
+          base_url: https://mealie.${DOMAIN_0}
+
+        oidc:
+          auth_enabled: false
+          signup_enabled: true
+          configuration_url: https://auth.${DOMAIN_0}/.well-known/openid-configuration
+          client_id: mealie
+          admin_group: ""
+          user_group: ""
+          provider_name: Authelia
+          auto_redirect: false
+          remember_me: true
+
+        smtp:
+          user: ${SMTP_USERNAME_0}
+          password: ${SMTP_PASSWORD_MEALIE}
+          host: ${SMTP_HOST_0}
+          port: 587
+          from_name: Mealie
+          from_email: ${SMTP_EMAIL_MEALIE}
+          auth_strategy: TLS
+
+      frontend:
+        theme:
+          dark_accent: '#6272a4'
+          dark_error: '#ff5555'
+          dark_info: '#bd93f9'
+          dark_primary: '#44475a'
+          dark_secondary: '#6272a4'
+          dark_success: '#ff79c6'
+          dark_warning: '#50fa7b'
+          light_accent: '#6272a4'
+          light_error: '#ff5555'
+          light_info: '#bd93f9'
+          light_primary: '#44475a'
+          light_secondary: '#6272a4'
+          light_success: '#ff79c6'
+          light_warning: '#50fa7b'

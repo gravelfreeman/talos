@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-    name: mealie
+    name: nextcloud
     labels:
         pod-security.kubernetes.io/enforce: privileged
         topolvm.io/webhook: ignore
-    annotations:
-        volsync.backube/privileged-movers: "true"
+    # annotations:
+    #     volsync.backube/privileged-movers: "true"
