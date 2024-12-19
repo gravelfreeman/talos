@@ -22,5 +22,6 @@ spec:
         remediation:
             retries: 3
     values:
+      TZ: America/Montreal
       speaker:
         ignoreExcludeLB: true

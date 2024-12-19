@@ -30,8 +30,9 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    TZ: America/Montreal
     global:
-      stopAll: true
+      stopAll: false
     
     credentials:
       backblaze:

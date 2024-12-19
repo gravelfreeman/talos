@@ -34,6 +34,7 @@ spec:
     uninstall:
         keepHistory: false
     values:
+      TZ: America/Montreal
       # autoDirectNodeRoutes: true
       # routingMode: native
       hubble:

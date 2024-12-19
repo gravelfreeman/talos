@@ -24,6 +24,7 @@ spec:
       strategy: rollback
       retries: 3
   values:
+    TZ: America/Montreal
     controllers:
       system-upgrade-controller:
         strategy: RollingUpdate

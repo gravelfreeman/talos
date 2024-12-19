@@ -1,16 +1,14 @@
----
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: immich
-  namespace: immich
+  name: vikunja
+  namespace: vikunja
 spec:
   interval: 15m
   chart:
     spec:
-      chart: immich
-      version: 17.26.0
+      chart: vikunja
+      version: 14.1.7
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -33,7 +31,7 @@ spec:
     TZ: America/Montreal
     global:
       stopAll: false
-    
+
     credentials:
       backblaze:
         type: s3
@@ -42,13 +40,13 @@ spec:
         accessKey: ${BUCKET_ACCESSKEY}
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
-    
+
     cnpg:
       main:
         mode: recovery
-        database: immich
-        user: immich
-        password: ${CNPG_PASSWORD_IMMICH}
+        database: vikunja
+        user: vikunja
+        password: ${CNPG_PASSWORD_VIKUNJA}
         pgVersion: 16
         backups:
           enabled: true
@@ -57,7 +55,7 @@ spec:
         recovery:
           method: object_store
           credentials: backblaze
-  
+
     ingress:
       main:
         enabled: true
@@ -66,66 +64,64 @@ spec:
             enabled: true
         tls:
           - hosts:
-            - photos.${DOMAIN_0}
+            - todo.${DOMAIN_0}
             clusterIssuer: domain-0-wildcard
         hosts:
-          - host: photos.${DOMAIN_0}
-    
+          - host: todo.${DOMAIN_0}
+
     persistence:
-      library:
+      vikunja-config:
         volsync:
-          - name: lib
+          - name: cfg
             type: restic
             credentials: backblaze
             dest:
               enabled: true
             src:
               enabled: true
-      profile:
+      files:
         volsync:
-          - name: prf
+          - name: dat
             type: restic
             credentials: backblaze
             dest:
               enabled: true
             src:
               enabled: true
-      thumbs:
-        volsync:
-          - name: thn
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-      uploads:
-        volsync:
-          - name: upl
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-      video:
-        volsync:
-          - name: vid
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-      user10:
+
+    vikunja:
+      service:
+        motd: ""
+        frontendurl: https://todo.${DOMAIN_0}
+        enableregistration: false
+        enabletotp: false
+        enableemailreminders: false
+
+      mailer:
         enabled: true
-        type: nfs
-        mountPath: /usr/src/app/upload/library/${USER_10}
-        server: ${NFS_SERVER_0}
-        path: ${DATASET_USERS}/${USER_10}/Photos
-      user11:
-        enabled: true
-        type: nfs
-        mountPath: /usr/src/app/upload/library/${USER_11}
-        server: ${NFS_SERVER_0}
-        path: ${DATASET_USERS}/${USER_11}/Photos
+        host: ${SMTP_HOST_0}
+        port: 587
+        username: "${SMTP_USERNAME_0}"
+        password: ${SMTP_PASSWORD_VIKUNJA}
+        fromemail: ${SMTP_FROM_VIKUNJA}
+
+      defaultsettings:
+        timezone: America/Montreal
+        avatar_provider: upload
+        language: "fr-CA"
+        overdue_tasks_reminders_enabled: false
+      backgrounds:
+        enabled: false
+
+      auth:
+        local:
+          enabled: true
+        openid:
+          enabled: true
+          redirecturl: https://todo.${DOMAIN_0}/auth/openid/
+          providers:
+          - name: Authelia
+            authurl: https://auth.${DOMAIN_0}
+            logouturl: https://todo.${DOMAIN_0}
+            clientid: ${OIDC_CLIENT_ID_VIKUNJA}
+            clientsecret: ${OIDC_CLIENT_SECRET_VIKUNJA}
