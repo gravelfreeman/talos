@@ -28,6 +28,7 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    TZ: America/Montreal
     global:
       stopAll: false
     log:
@@ -50,7 +51,6 @@ spec:
               env:
                 AUTHELIA_THEME: grey
                 AUTHELIA_SERVER_ASSET_PATH: /config/assets
-
 
     persistence:
       config:
@@ -81,7 +81,7 @@ spec:
         users_filter: (&({username_attribute}={input})(objectClass=person))
         groups_filter: (member={dn})
         user: uid=${LDAP_USER_DN},ou=people,dc=${USER_10},dc=${DOMAIN_TLD_0}
-        plain_password: ${LDAP_PLAIN_PASSWORD}
+        plain_password: ${LDAP_USER_PASS}
       file:
         enabled: false
 
@@ -118,6 +118,9 @@ spec:
           #   clusterIssuer: domain-1-wildcard
         hosts:
           - host: auth.${DOMAIN_0}
+            paths:
+              - path: /
+                pathType: Prefix
           # - host: auth.${DOMAIN_1}
 
     identity_providers:
@@ -126,63 +129,73 @@ spec:
         clients:
 
           # NEXTCLOUD
-          - id: nextcloud
-            description: Freeman • Cloud
+          - id: ${OIDC_CLIENT_ID_NEXTCLOUD}
             secret: ${OIDC_SECRET_NEXTCLOUD}
+            description: Freeman • Cloud
             public: false
             authorization_policy: two_factor
             consent_mode: implicit
             require_pkce: true
             pkce_challange_method: S256
+            redirect_uris:
+            - https://cloud.${DOMAIN_0}/apps/oidc_login/oidc
             scopes:
             - openid
             - profile
             - email
             - groups
-            grant_types:
-            - authorization_code
-            - refresh_token
-            response_modes:
-            - form_post
-            - query
-            - fragment
-            response_types:
-            - code
-            redirect_uris:
-            - https://cloud.${DOMAIN_0}/apps/oidc_login/oidc
             userinfo_signing_algorithm: none
             token_endpoint_auth_method: client_secret_basic
 
           # IMMICH
-          - id: immich
-            description: Freeman • Photos
+          - id: ${OIDC_CLIENT_ID_IMMICH}
             secret: ${OIDC_SECRET_IMMICH}
+            description: Freeman • Photos
             public: false
             authorization_policy: two_factor
             consent_mode: implicit
-            scopes:
-            - openid
-            - profile
-            - email
             redirect_uris:
             - https://photos.${DOMAIN_0}/auth/login
             - https://photos.${DOMAIN_0}/user-settings
             - app.immich:///oauth-callback
-            userinfo_signing_algorithm: none
-
-          # VIKUNJA
-          - id: vikunja
-            description: Freeman • Todo
-            secret: ${OIDC_SECRET_VIKUNJA}
-            public: false
-            authorization_policy: two_factor
-            consent_mode: implicit
             scopes:
             - openid
             - profile
             - email
+            - groups
+            userinfo_signing_algorithm: none
+
+          # MEALIE
+          - id: ${OIDC_CLIENT_ID_MEALIE}
+            secret: ${OIDC_SECRET_MEALIE}
+            description: Mealie
+            public: false
+            authorization_policy: two_factor
+            consent_mode: implicit
+            require_pkce: true
+            pkce_challenge_method: S256
             redirect_uris:
-            - 'https://vikunja.${DOMAIN_0}/auth/openid/authelia'
+            - https://mealie.${DOMAIN_0}/login
+            scopes:
+            - openid
+            - email
+            - profile
+            - groups
+            userinfo_signed_response_alg: none
+
+          # VIKUNJA
+          - id: ${OIDC_CLIENT_ID_VIKUNJA}
+            secret: ${OIDC_SECRET_VIKUNJA}
+            description: Freeman • Todo
+            public: false
+            authorization_policy: two_factor
+            consent_mode: implicit
+            redirect_uris:
+            - https://todo.${DOMAIN_0}/auth/openid/authelia
+            scopes:
+            - openid
+            - profile
+            - email
             userinfo_signing_algorithm: none
             token_endpoint_auth_method: client_secret_basic
 

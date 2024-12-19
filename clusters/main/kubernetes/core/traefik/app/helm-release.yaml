@@ -31,6 +31,7 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    TZ: America/Montreal
     global:
       stopAll: false
 
@@ -47,7 +48,7 @@ spec:
           traefik:
             enabled: true
             middlewares:
-              - name: auth 
+              - name: auth
                 namespace: traefik 
               - name: traefik-dashboard
                 namespace: traefik

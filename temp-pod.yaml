@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pvc-copy-pod
+  namespace: vikunja
+spec:
+  containers:
+    - name: file-copy-container
+      image: busybox
+      command: ["sh", "-c", "sleep 3600"] # Garde le Pod actif
+      volumeMounts:
+        - mountPath: "/mnt/pvc"
+          name: pvc-volume
+  volumes:
+    - name: pvc-volume
+      persistentVolumeClaim:
+        claimName: vikunja-files
+

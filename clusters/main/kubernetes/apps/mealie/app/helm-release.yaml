@@ -8,12 +8,13 @@ spec:
   chart:
     spec:
       chart: mealie
-      version: 22.2.2
+      version: 24.1.2
       sourceRef:
         kind: HelmRepository
         name: truecharts
         namespace: flux-system
   values:
+    TZ: America/Montreal
     global:
       stopAll: false
     
@@ -53,9 +54,6 @@ spec:
             clusterIssuer: domain-0-wildcard
         hosts:
           - host: mealie.${DOMAIN_0}
-            paths:
-              - path: /
-                pathType: Prefix
 
     persistence:
       data:
@@ -68,22 +66,28 @@ spec:
             src:
               enabled: true
 
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                OIDC_AUTH_ENABLED: true
+                OIDC_SIGNUP_ENABLED: false
+                OIDC_CONFIGURATION_URL: https://auth.${DOMAIN_0}/.well-known/openid-configuration
+                OIDC_CLIENT_ID: ${OIDC_CLIENT_ID_MEALIE}
+                OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET_MEALIE}
+                OIDC_AUTO_REDIRECT: true
+                OIDC_PROVIDER_NAME: Freeman • Auth
+                OIDC_ADMIN_GROUP: admin
+                OIDC_USER_GROUP: user
+                OPENAI_API_KEY: ${MEALIE_OPENAI_API_KEY}
+
     mealie:
       api:
         general:
           allow_signup: false
           base_url: https://mealie.${DOMAIN_0}
-
-        oidc:
-          auth_enabled: false
-          signup_enabled: true
-          configuration_url: https://auth.${DOMAIN_0}/.well-known/openid-configuration
-          client_id: mealie
-          admin_group: ""
-          user_group: ""
-          provider_name: Authelia
-          auto_redirect: false
-          remember_me: true
 
         smtp:
           user: ${SMTP_USERNAME_0}
@@ -91,7 +95,7 @@ spec:
           host: ${SMTP_HOST_0}
           port: 587
           from_name: Mealie
-          from_email: ${SMTP_EMAIL_MEALIE}
+          from_email: ${SMTP_FROM_MEALIE}
           auth_strategy: TLS
 
       frontend:

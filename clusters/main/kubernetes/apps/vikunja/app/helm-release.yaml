@@ -1,0 +1,156 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vikunja
+  namespace: vikunja
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: vikunja
+      version: 14.1.7
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    TZ: America/Montreal
+    global:
+      stopAll: false
+
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+
+    cnpg:
+      main:
+        mode: recovery
+        database: vikunja
+        user: vikunja
+        password: ${CNPG_PASSWORD_VIKUNJA}
+        pgVersion: 16
+        backups:
+          enabled: true
+          revision: "1"
+          credentials: backblaze
+        recovery:
+          method: object_store
+          credentials: backblaze
+
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+        tls:
+          - hosts:
+            - todo.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: todo.${DOMAIN_0}
+
+    persistence:
+      vikunja-config:
+        volsync:
+          - name: cfg
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      files:
+        volsync:
+          - name: dat
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+
+    vikunja:
+      service:
+        motd: ""
+        frontendurl: https://todo.${DOMAIN_0}
+        enableregistration: false
+        enabletotp: false
+        enableemailreminders: false
+        allowiconchanges: true
+        customlogourl: https://freeman.art/favicon.png
+
+      mailer:
+        enabled: true
+        host: ${SMTP_HOST_0}
+        port: 587
+        username: "${SMTP_USERNAME_0}"
+        password: ${SMTP_PASSWORD_VIKUNJA}
+        fromemail: ${SMTP_FROM_VIKUNJA}
+
+      defaultsettings:
+        timezone: America/Montreal
+        avatar_provider: upload
+        language: "fr-CA"
+        overdue_tasks_reminders_enabled: false
+      backgrounds:
+        enabled: false
+
+      auth:
+        local:
+          enabled: true
+        openid:
+          enabled: true
+          redirecturl: https://todo.${DOMAIN_0}/auth/openid/
+          providers:
+          - name: Authelia
+            authurl: https://auth.${DOMAIN_0}
+            logouturl: https://todo.${DOMAIN_0}
+            clientid: ${OIDC_CLIENT_ID_VIKUNJA}
+            clientsecret: ${OIDC_CLIENT_SECRET_VIKUNJA}
+
+    # workload:
+    #   main:
+    #     podSpec:
+    #       containers:
+    #         main:
+    #           env:
+    #             VIKUNJA_SERVICE_ALLOWICONCHANGES: true
+    #             VIKUNJA_SERVICE_CUSTOMLOGOURL: 'https://freeman.art/favicon.png'
+
+    addons:
+      codeserver:
+        enabled: true
+        ingress:
+          enabled: true
+          integrations:
+            traefik:
+              enabled: true
+              middlewares:
+                - name: auth
+                  namespace: traefik
+          tls:
+            - hosts:
+              - todo.cs.${DOMAIN_0}
+              clusterIssuer: domain-0-cs-wildcard
+          hosts:
+            - host: todo.cs.${DOMAIN_0}

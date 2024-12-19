@@ -29,5 +29,6 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    TZ: America/Montreal
     global:
       stopAll: false

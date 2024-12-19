@@ -25,6 +25,7 @@ spec:
         remediation:
             retries: 3
     values:
+      TZ: America/Montreal
       openebs-crds:
         csi:
           volumeSnapshots:
