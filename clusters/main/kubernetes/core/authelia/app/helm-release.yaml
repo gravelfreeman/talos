@@ -81,7 +81,7 @@ spec:
         users_filter: (&({username_attribute}={input})(objectClass=person))
         groups_filter: (member={dn})
         user: uid=${LDAP_USER_DN},ou=people,dc=${USER_10},dc=${DOMAIN_TLD_0}
-        plain_password: ${LDAP_PLAIN_PASSWORD}
+        plain_password: ${LDAP_USER_PASS}
       file:
         enabled: false
 
