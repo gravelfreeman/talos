@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: vikunja
-      version: 14.1.7
+      version: 16.0.1
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -96,8 +96,6 @@ spec:
         enableregistration: false
         enabletotp: false
         enableemailreminders: false
-        allowiconchanges: true
-        customlogourl: https://freeman.art/favicon.png
 
       mailer:
         enabled: true
@@ -128,29 +126,10 @@ spec:
             clientid: ${OIDC_CLIENT_ID_VIKUNJA}
             clientsecret: ${OIDC_CLIENT_SECRET_VIKUNJA}
 
-    # workload:
-    #   main:
-    #     podSpec:
-    #       containers:
-    #         main:
-    #           env:
-    #             VIKUNJA_SERVICE_ALLOWICONCHANGES: true
-    #             VIKUNJA_SERVICE_CUSTOMLOGOURL: 'https://freeman.art/favicon.png'
-
-    addons:
-      codeserver:
-        enabled: true
-        ingress:
-          enabled: true
-          integrations:
-            traefik:
-              enabled: true
-              middlewares:
-                - name: auth
-                  namespace: traefik
-          tls:
-            - hosts:
-              - todo.cs.${DOMAIN_0}
-              clusterIssuer: domain-0-cs-wildcard
-          hosts:
-            - host: todo.cs.${DOMAIN_0}
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                VIKUNJA_SERVICE_CUSTOMLOGOURL: https://freeman.art/vikunja.svg
