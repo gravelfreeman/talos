@@ -73,7 +73,7 @@ spec:
         enabled: true
         mountPath: /app/public/images
         volsync:
-          - name: img
+          - name: pub
             type: restic
             credentials: backblaze
             dest:
