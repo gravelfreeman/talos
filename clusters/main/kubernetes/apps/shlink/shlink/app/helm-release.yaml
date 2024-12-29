@@ -43,17 +43,10 @@ spec:
 
     cnpg:
       main:
-        mode: recovery
-        database: shlink
-        user: shlink
-        password: ${CNPG_PASSWORD_SHLINK}
-        pgVersion: 16
         backups:
           enabled: true
-          revision: "1"
           credentials: backblaze
         recovery:
-          method: object_store
           credentials: backblaze
 
     ingress:
