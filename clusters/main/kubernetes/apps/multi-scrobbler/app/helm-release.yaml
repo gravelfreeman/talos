@@ -1,0 +1,81 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: multi-scrobbler
+  namespace: multi-scrobbler
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: multi-scrobbler
+      version: 7.0.9
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    TZ: America/Montreal
+    global:
+      stopAll: false
+    
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+            middlewares:
+              - name: auth
+                namespace: traefik
+        tls:
+          - hosts:
+            - scrobbler.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: scrobbler.${DOMAIN_0}
+
+    persistence:
+      volsync:
+        - name: cfg
+          type: restic
+          credentials: backblaze
+          dest:
+            enabled: true
+          src:
+            enabled: true
+
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                MALOJA_URL: maloja.maloja.svc.cluster.local:42010
+                MALOJA_API_KEY: ${MALOJA_API_KEY}
+                SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID}
+                SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET}
+                SPOTIFY_REDIRECT_URI: https://scrobbler.${DOMAIN_0}/callback
+                PLEX_USER: ${PLEX_USER}

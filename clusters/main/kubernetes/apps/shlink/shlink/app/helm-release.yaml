@@ -1,0 +1,86 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: shlink
+  namespace: shlink
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: shlink
+      version: 15.1.5
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    TZ: America/Montreal
+    global:
+      stopAll: false
+    
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+
+    cnpg:
+      main:
+        mode: recovery
+        database: shlink
+        user: shlink
+        password: ${CNPG_PASSWORD_SHLINK}
+        pgVersion: 16
+        backups:
+          enabled: true
+          revision: "1"
+          credentials: backblaze
+        recovery:
+          method: object_store
+          credentials: backblaze
+
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          certManager:
+            certificateIssuer: domain-2-le-prod
+            enabled: true
+          traefik:
+            enabled: true
+        tls:
+          - hosts:
+            - shlink.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: ${DOMAIN_2}
+          - host: shlink.${DOMAIN_0}
+            paths:
+            - path: /rest/
+              pathType: Prefix
+
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                DEFAULT_DOMAIN: ${DOMAIN_2}
+                GEOLITE_LICENSE_KEY: ${GEOLITE_LICENSE_KEY}

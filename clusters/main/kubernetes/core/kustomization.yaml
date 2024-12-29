@@ -13,3 +13,4 @@ resources:
   - authelia/ks.yaml
   - flaresolverr/ks.yaml
   - gluetun/ks.yaml
+  - pgadmin/ks.yaml

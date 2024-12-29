@@ -1,0 +1,74 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: homebox
+  namespace: homebox
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: homebox
+      version: 7.0.8
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    TZ: America/Montreal
+    global:
+      stopAll: false
+    
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+            middlewares:
+              - name: auth
+                namespace: traefik
+        tls:
+          - hosts:
+            - homebox.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: homebox.${DOMAIN_0}
+
+    persistence:
+      volsync:
+        - name: dat
+          type: restic
+          credentials: backblaze
+          dest:
+            enabled: true
+          src:
+            enabled: true
+
+    homebox:
+      mailer_host: ${SMTP_HOST_0}
+      mailer_from: ${SMTP_FROM_HOMEBOX}
+      mailer_username: ${SMTP_USERNAME_0}
+      mailer_password: ${SMTP_PASSWORD_HOMEBOX}

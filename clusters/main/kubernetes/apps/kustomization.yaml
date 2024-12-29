@@ -9,3 +9,14 @@ resources:
   - thelounge/ks.yaml
   - mealie/ks.yaml
   - vikunja/ks.yaml
+  - shlink
+  - actualserver/ks.yaml
+  - duplicacy/ks.yaml
+  - homebox/ks.yaml
+  - maloja/ks.yaml
+  - multi-scrobbler/ks.yaml
+  - projectsend/ks.yaml
+  - sftpgo/ks.yaml
+  - snapdrop/ks.yaml
+  - speedtest-tracker/ks.yaml
+  - stirling-pdf/ks.yaml

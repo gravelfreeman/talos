@@ -14,3 +14,10 @@ resources:
   - watcharr/ks.yaml
   - qbittorrent
   - sabnzbd/ks.yaml
+  - archivebox/ks.yaml
+  - audiobookshelf/ks.yaml
+  - jdownloader/ks.yaml
+  - makemkv/ks.yaml
+  - metube/ks.yaml
+  - stash/ks.yaml
+  - tubesync/ks.yaml

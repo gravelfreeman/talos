@@ -1,0 +1,141 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sftpgo
+  namespace: sftpgo
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: sftpgo
+      version: 7.1.4
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    TZ: America/Montreal
+    global:
+      stopAll: false
+    
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+            middlewares:
+              - name: auth
+                namespace: traefik
+        tls:
+          - hosts:
+            - sftpgo.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: sftpgo.${DOMAIN_0}
+
+    persistence:
+      configpath:
+        volsync:
+          - name: cfg
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      data:
+        volsync:
+          - name: dat
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      backupdirectory:
+        volsync:
+          - name: bkp
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      shareaccess:
+        volsync:
+          - name: sha
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      userdata:
+        enabled: true
+        type: nfs
+        mountPath: /data
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_MEDIA}/temp/sftpgo
+      roms:
+        enabled: true
+        type: nfs
+        mountPath: /roms
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_MEDIA}/library/games
+      wordpress:
+        enabled: true
+        type: nfs
+        mountPath: /wordpress
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_BACKUPS}/wordpress
+      archive:
+        enabled: true
+        type: nfs
+        mountPath: /archive
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_MEDIA}/archive/concerts
+
+    service:
+      ftpport:
+        type: LoadBalancer
+      sftpport:
+        type: LoadBalancer
+      webdavport:
+        type: LoadBalancer
+
+    # workload:
+    #   main:
+    #     podSpec:
+    #       containers:
+    #         main:
+    #           env:
+    #             SFTPGO_HTTPD__BINDINGS__0__OIDC__CLIENT_ID: ${OIDC_CLIENT_ID_SFTPGO}
+    #             SFTPGO_HTTPD__BINDINGS__0__OIDC__CLIENT_SECRET: ${OIDC_CLIENT_SECRET_SFTPGO}
+    #             SFTPGO_HTTPD__BINDINGS__0__OIDC__CONFIG_URL: https://auth.${DOMAIN_0}/auth/realms/sftpgo
+    #             SFTPGO_HTTPD__BINDINGS__0__OIDC__REDIRECT_BASE_URL: http://ip:port
+    #             SFTPGO_HTTPD__BINDINGS__0__OIDC__USERNAME_FIELD: preferred_username
+    #             SFTPGO_HTTPD__BINDINGS__0__OIDC__ROLE_FIELD: sftpgo
