@@ -72,11 +72,3 @@ spec:
         mountPath: /downloads
         server: ${NFS_SERVER_0}
         path: ${DATASET_MEDIA}/temp/downloads/ytdl
-
-    workload:
-      main:
-        podSpec:
-          containers:
-            main:
-              env:
-                TUBESYNC_WORKERS: "4"
