@@ -76,9 +76,9 @@ spec:
               enabled: true
             src:
               enabled: true
-      audiobooks:
-        enabled: true
-        type: nfs
-        mountPath: /audiobooks
-        server: ${NFS_SERVER_0}
-        path: audio.${DOMAIN_1}
+      # audiobooks:
+      #   enabled: true
+      #   type: nfs
+      #   mountPath: /audiobooks
+      #   server: ${NFS_SERVER_0}
+      #   path: 

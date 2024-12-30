@@ -58,14 +58,15 @@ spec:
           - host: homebox.${DOMAIN_0}
 
     persistence:
-      volsync:
-        - name: dat
-          type: restic
-          credentials: backblaze
-          dest:
-            enabled: true
-          src:
-            enabled: true
+      data:
+        volsync:
+          - name: dat
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
 
     homebox:
       mailer_host: ${SMTP_HOST_0}

@@ -7,7 +7,7 @@ spec:
   interval: 15m
   chart:
     spec:
-      chart: custom-app
+      chart: stirling-pdf
       version: 13.0.8
       sourceRef:
         kind: HelmRepository
@@ -66,6 +66,15 @@ spec:
               enabled: true
             src:
               enabled: true
+      tessdata:
+        volsync:
+          - name: dat
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
       custom-files:
         volsync:
           - name: cuf
@@ -93,6 +102,4 @@ spec:
               env:
                 UI_APPNAME: Freeman • PDF
                 UI_APPNAMENAVBAR: Freeman • PDF
-                SYSTEM_GOOGLEVISIBILITY: false
-                SYSTEM_CUSTOMSTATICFILEPATH: /customFiles
-                SYSTEM_DEFAULTLOCALE: fr-FR
+                LANGS: fr-FR

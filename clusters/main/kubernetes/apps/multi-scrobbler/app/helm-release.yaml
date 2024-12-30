@@ -58,14 +58,15 @@ spec:
           - host: scrobbler.${DOMAIN_0}
 
     persistence:
-      volsync:
-        - name: cfg
-          type: restic
-          credentials: backblaze
-          dest:
-            enabled: true
-          src:
-            enabled: true
+      config:
+        volsync:
+          - name: cfg
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
 
     workload:
       main:
