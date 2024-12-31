@@ -14,7 +14,7 @@ resources:
   - duplicacy/ks.yaml
   - homebox/ks.yaml
   - maloja/ks.yaml
-  # - multi-scrobbler/ks.yaml
+  - multi-scrobbler/ks.yaml
   - projectsend/ks.yaml
   - sftpgo/ks.yaml
   - snapdrop/ks.yaml
