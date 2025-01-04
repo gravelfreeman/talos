@@ -68,26 +68,13 @@ spec:
             src:
               enabled: true
       storage:
-        volsync:
-          - name: dat
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-      output:
-        enabled: true
         type: nfs
-        mountPath: /output
-        server: ${NFS_SERVER_0}
-        path: ${DATASET_MEDIA}/temp/makemkv
-      temp:
-        enabled: true
-        type: nfs
-        mountPath: /media/temp
         server: ${NFS_SERVER_0}
         path: ${DATASET_MEDIA}/temp
+      output:
+        type: nfs
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_MEDIA}/temp/makemkv
 
     makemkv:
       KEEP_APP_RUNNING: true

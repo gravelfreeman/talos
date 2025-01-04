@@ -46,16 +46,14 @@ spec:
     cnpg:
       main:
         mode: recovery
-        database: nextcloud
-        user: nextcloud
         password: ${CNPG_PASSWORD_NEXTCLOUD}
-        pgVersion: 16
+        cluster:
+          singleNode: true
         backups:
           enabled: true
-          revision: "1"
+          revision: "2"
           credentials: backblaze
         recovery:
-          method: object_store
           credentials: backblaze
     
     nextcloud:

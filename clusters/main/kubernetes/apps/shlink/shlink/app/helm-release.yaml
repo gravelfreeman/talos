@@ -43,6 +43,10 @@ spec:
 
     cnpg:
       main:
+        mode: recovery
+        password: ${CNPG_PASSWORD_SHLINK}
+        cluster:
+          singleNode: true
         backups:
           enabled: true
           credentials: backblaze

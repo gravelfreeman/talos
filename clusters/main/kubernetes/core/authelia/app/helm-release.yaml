@@ -43,6 +43,18 @@ spec:
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
 
+    cnpg:
+      main:
+        mode: recovery
+        password: ${CNPG_PASSWORD_AUTHELIA}
+        cluster:
+          singleNode: true
+        backups:
+          enabled: true
+          credentials: backblaze
+        recovery:
+          credentials: backblaze
+
     workload:
       main:
         podSpec:
@@ -242,6 +254,7 @@ spec:
 
         # USER_11
         - domain:
+          - "split.${DOMAIN_0}"
           - "homebox.${DOMAIN_0}"
           - "mealie.${DOMAIN_0}"
           - "stash.${DOMAIN_0}"

@@ -21,3 +21,6 @@ resources:
   - speedtest-tracker/ks.yaml
   - stirling-pdf/ks.yaml
   - companion/ks.yaml
+  - splitpro/ks.yaml
+  - changedetection/ks.yaml
+  - rtmp-hls/ks.yaml

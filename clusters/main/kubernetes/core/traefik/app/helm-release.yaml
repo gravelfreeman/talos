@@ -71,6 +71,10 @@ spec:
           regex: https://traefik\.${DOMAIN_0}/?$
           replacement: https://traefik.${DOMAIN_0}/dashboard/#/
           permanent: true
+        - name: rtmp-hls
+          regex: https://rtmp\.${DOMAIN_0}/?$
+          replacement: https://rtmp.${DOMAIN_0}/stats.html
+          permanent: true
       # AUTHELIA
       forwardAuth:
         - name: auth

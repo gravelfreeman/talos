@@ -20,3 +20,4 @@ mounts/
 kubeconfig
 ssh-public-key.txt
 .decrypted~*.yaml
+tcdbinfo.sh

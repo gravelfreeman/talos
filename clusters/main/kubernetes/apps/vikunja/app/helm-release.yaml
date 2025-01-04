@@ -44,16 +44,14 @@ spec:
     cnpg:
       main:
         mode: recovery
-        database: vikunja
-        user: vikunja
         password: ${CNPG_PASSWORD_VIKUNJA}
-        pgVersion: 16
+        cluster:
+          singleNode: true
         backups:
           enabled: true
           revision: "1"
           credentials: backblaze
         recovery:
-          method: object_store
           credentials: backblaze
 
     ingress:

@@ -30,16 +30,14 @@ spec:
     cnpg:
       main:
         mode: recovery
-        database: speedtest-tracker
-        user: speedtest-tracker
         password: ${CNPG_PASSWORD_STT}
-        pgVersion: 16
+        cluster:
+          singleNode: true
         backups:
           enabled: true
-          revision: "1"
+          revision: "2"
           credentials: backblaze
         recovery:
-          method: object_store
           credentials: backblaze
 
     ingress:

@@ -30,16 +30,14 @@ spec:
     cnpg:
       main:
         mode: recovery
-        database: mealie
-        user: mealie
         password: ${CNPG_PASSWORD_MEALIE}
-        pgVersion: 16
+        cluster:
+          singleNode: true
         backups:
           enabled: true
-          revision: "1"
+          revision: "3"
           credentials: backblaze
         recovery:
-          method: object_store
           credentials: backblaze
 
     ingress:

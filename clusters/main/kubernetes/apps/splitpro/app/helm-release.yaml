@@ -1,16 +1,14 @@
----
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: lldap
-  namespace: lldap
+  name: splitpro
+  namespace: splitpro
 spec:
   interval: 15m
   chart:
     spec:
-      chart: lldap
-      version: 7.5.0
+      chart: app-template
+      version: 14.4.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -33,7 +31,19 @@ spec:
     TZ: America/Montreal
     global:
       stopAll: false
-    
+
+    image:
+      repository: ghcr.io/oss-apps/splitpro
+      pullPolicy: IfNotPresent
+      tag: v1.3.2
+
+    securityContext:
+      container:
+        readOnlyRootFilesystem: false
+        runAsNonRoot: false
+        runAsUser: 0
+        runAsGroup: 0
+
     credentials:
       backblaze:
         type: s3
@@ -45,15 +55,25 @@ spec:
 
     cnpg:
       main:
-        mode: recovery
-        password: ${CNPG_PASSWORD_LLDAP}
+        enabled: true
         cluster:
           singleNode: true
+        mode: recovery
+        database: splitpro
+        user: splitpro
+        password: ${CNPG_PASSWORD_SPLITPRO}
         backups:
           enabled: true
           credentials: backblaze
         recovery:
           credentials: backblaze
+
+    service:
+      main:
+        ports:
+          main:
+            port: 3000
+            targetPort: 3000
 
     ingress:
       main:
@@ -66,21 +86,10 @@ spec:
                 namespace: traefik
         tls:
           - hosts:
-            - ldap.${DOMAIN_0}
+            - split.${DOMAIN_0}
             clusterIssuer: domain-0-wildcard
         hosts:
-          - host: ldap.${DOMAIN_0}
-
-    persistence:
-      data:
-        volsync:
-          - name: cfg
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
+          - host: split.${DOMAIN_0}
 
     workload:
       main:
@@ -88,8 +97,12 @@ spec:
           containers:
             main:
               env:
-                LLDAP_HTTP_URL: https://lldap.${DOMAIN_0}
-                LLDAP_LDAP_BASE_DN: dc=${USER_10},dc=${DOMAIN_TLD_0}
-                LDAP_USER_DN: ${LDAP_USER_DN}
-                LLDAP_LDAP_USER_EMAIL: ${LDAP_USER_EMAIL}
-                LLDAP_LDAP_USER_PASS: ${LDAP_USER_PASS}
+                DATABASE_URL: postgresql://splitpro:${CNPG_PASSWORD_SPLITPRO}@splitpro-app-template-cnpg-main-rw:5432/splitpro
+                NEXTAUTH_URL: https://split.${DOMAIN_0}
+                NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+                ENABLE_SENDING_INVITES: true
+                FROM_EMAIL: auth@${DOMAIN_0}
+                EMAIL_SERVER_HOST: ${SMTP_HOST_0}
+                EMAIL_SERVER_PORT: 587
+                EMAIL_SERVER_USER: ${SMTP_USERNAME_0}
+                EMAIL_SERVER_PASSWORD: ${SMTP_PASSWORD_SPLITPRO}
