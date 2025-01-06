@@ -21,3 +21,4 @@ resources:
   - metube/ks.yaml
   - stash/ks.yaml
   - tubesync/ks.yaml
+  - slskd/ks.yaml
