@@ -24,3 +24,5 @@ resources:
   - splitpro/ks.yaml
   - changedetection/ks.yaml
   - rtmp-hls/ks.yaml
+  - flatnotes/ks.yaml
+  - gostream/ks.yaml

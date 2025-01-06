@@ -1,8 +1,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: splitpro
-  namespace: splitpro
+  name: gostream
+  namespace: gostream
 spec:
   interval: 15m
   chart:
@@ -33,16 +33,14 @@ spec:
       stopAll: false
 
     image:
-      repository: ghcr.io/oss-apps/splitpro
+      repository: webdevops/php-apache
       pullPolicy: IfNotPresent
-      tag: v1.3.2
+      tag: "8.0"
 
     securityContext:
       container:
         readOnlyRootFilesystem: false
-        runAsNonRoot: false
-        runAsUser: 0
-        runAsGroup: 0
+        privileged: true
 
     credentials:
       backblaze:
@@ -53,26 +51,11 @@ spec:
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
 
-    cnpg:
-      main:
-        enabled: true
-        cluster:
-          singleNode: true
-        mode: recovery
-        database: splitpro
-        user: splitpro
-        password: ${CNPG_PASSWORD_SPLITPRO}
-        backups:
-          enabled: true
-          credentials: backblaze
-        recovery:
-          credentials: backblaze
-
     service:
       main:
         ports:
           main:
-            port: 3000
+            port: 80
 
     ingress:
       main:
@@ -85,23 +68,26 @@ spec:
                 namespace: traefik
         tls:
           - hosts:
-            - split.${DOMAIN_0}
+            - gostream.${DOMAIN_0}
             clusterIssuer: domain-0-wildcard
         hosts:
-          - host: split.${DOMAIN_0}
+          - host: gostream.${DOMAIN_0}
 
-    workload:
-      main:
-        podSpec:
-          containers:
-            main:
-              env:
-                DATABASE_URL: postgresql://splitpro:${CNPG_PASSWORD_SPLITPRO}@splitpro-app-template-cnpg-main-rw:5432/splitpro
-                NEXTAUTH_URL: https://split.${DOMAIN_0}
-                NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-                ENABLE_SENDING_INVITES: true
-                FROM_EMAIL: auth@${DOMAIN_0}
-                EMAIL_SERVER_HOST: ${SMTP_HOST_0}
-                EMAIL_SERVER_PORT: 587
-                EMAIL_SERVER_USER: ${SMTP_USERNAME_0}
-                EMAIL_SERVER_PASSWORD: ${SMTP_PASSWORD_SPLITPRO}
+    persistence:
+      data:
+        enabled: true
+        type: pvc
+        mountPath: /app
+        targetSelectAll: true
+        volsync:
+          - name: app
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+      apache:
+        enabled: true
+        type: emptyDir
+        mountPath: /var/run/apache2
