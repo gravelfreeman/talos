@@ -1,9 +1,8 @@
----
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: rtmp-hls
-  namespace: rtmp-hls
+  name: flatnotes
+  namespace: flatnotes
 spec:
   interval: 15m
   chart:
@@ -33,31 +32,31 @@ spec:
     global:
       stopAll: false
 
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+
     image:
-      repository: alqutami/rtmp-hls
+      repository: dullage/flatnotes
       pullPolicy: IfNotPresent
       tag: latest
 
     securityContext:
       container:
         readOnlyRootFilesystem: false
-        runAsUser: 0
-        runAsGroup: 0
+        runAsUser: 1000
+        runAsGroup: 1000
 
     service:
       main:
         ports:
           main:
             port: 8080
-      rtmp:
-        enabled: true
-        type: LoadBalancer
-        ports:
-          rtmp:
-            enabled: true
-            protocol: tcp
-            port: 1935
-            targetPort: 1935
 
     ingress:
       main:
@@ -70,34 +69,30 @@ spec:
                 namespace: traefik
         tls:
           - hosts:
-            - rtmp.${DOMAIN_0}
+            - docs.${DOMAIN_0}
             clusterIssuer: domain-0-wildcard
         hosts:
-          - host: rtmp.${DOMAIN_0}
+          - host: docs.${DOMAIN_0}
 
     persistence:
-      dash:
+      data:
         enabled: true
-        mountPath: /mnt/dash
-      hls:
-        enabled: true
-        mountPath: /mnt/hls
-      nginx:
-        enabled: true
-        mountPath: /var/run/nginx
+        type: pvc
+        mountPath: /data
+        targetSelectAll: true
+        volsync:
+          - name: dat
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
 
     workload:
       main:
         podSpec:
           containers:
             main:
-              probes:
-                liveness:
-                  type: http
-                  path: /stats.html
-                readiness:
-                  type: http
-                  path: /stats.html
-                startup:
-                  type: http
-                  path: /stats.html
+              env:
+                FLATNOTES_AUTH_TYPE: none

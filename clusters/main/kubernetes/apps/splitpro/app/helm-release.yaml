@@ -73,7 +73,6 @@ spec:
         ports:
           main:
             port: 3000
-            targetPort: 3000
 
     ingress:
       main:
