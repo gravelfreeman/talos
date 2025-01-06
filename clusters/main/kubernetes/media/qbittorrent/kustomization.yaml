@@ -6,3 +6,4 @@ resources:
   - qb2/ks.yaml
   - qb3/ks.yaml
   - qb4/ks.yaml
+  - qbitmanage/ks.yaml

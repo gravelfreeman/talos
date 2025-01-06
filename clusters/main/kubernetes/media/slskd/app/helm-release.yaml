@@ -16,6 +16,17 @@ spec:
         name: truecharts
         namespace: flux-system
       interval: 15m
+  postRenderers:
+  - kustomize:
+      patches:
+        - target:
+            version: v1
+            kind: Deployment
+            name: slskd
+          patch: |
+            - op: add
+              path: /spec/template/spec/containers/1/resources/limits/truecharts.org~1tun
+              value: 1
   timeout: 20m
   maxHistory: 3
   install:
@@ -41,6 +52,28 @@ spec:
         accessKey: ${BUCKET_ACCESSKEY}
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
+
+    service:
+      proxy:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: ${LOAD_BALANCER_SLSKD}
+        ports:
+          proxy:
+            enabled: true
+            protocol: http
+            targetPort: ${PROXY_PORT}
+            port: ${PROXY_PORT}
+      socks:
+        enabled: true
+        type: LoadBalancer
+        loadBalancerIP: ${LOAD_BALANCER_SLSKD}
+        ports:
+          socks:
+            enabled: true
+            protocol: tcp
+            targetPort: ${SOCKS_PORT}
+            port: ${SOCKS_PORT}
 
     ingress:
       main:
@@ -90,4 +123,92 @@ spec:
           containers:
             main:
               env:
+                DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE: true
+                SLSKD_SLSK_LISTEN_PORT: 50300
+                SLSKD_REMOTE_FILE_MANAGEMENT: true
+                SLSKD_REMOTE_CONFIGURATION: true
                 SLSKD_NO_AUTH: true
+                SLSKD_SLSK_USERNAME: ${SLSKD_USERNAME}
+                SLSKD_SLSK_PASSWORD: ${SLSKD_PASSWORD}
+
+    addons:
+      vpn:
+        type: gluetun
+        killSwitch: true
+        excludedNetworks_IPv4:
+          - ${EXCLUDED_IPV4_0}
+        env:
+          VPN_TYPE: wireguard
+          VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER_0}
+          VPN_PORT_FORWARDING: on
+          VPN_PORT_FORWARDING_PROVIDER: ${VPN_SERVICE_PROVIDER_1}
+          WIREGUARD_ENDPOINT_IP: ${WIREGUARD_ENDPOINT_IP_SLSKD}
+          WIREGUARD_ENDPOINT_PORT: ${WIREGUARD_ENDPOINT_PORT_0}
+          WIREGUARD_PUBLIC_KEY: ${WIREGUARD_PUBLIC_KEY_SLSKD}
+          WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY_SLSKD}
+          WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_1}
+          FIREWALL_INPUT_PORTS: ${SERVER_PORT},${PROXY_PORT},${SOCKS_PORT},${SLSKD_PORT}
+          DNS_KEEP_NAMESERVER: off
+          HTTPPROXY: on
+          HTTPPROXY_LOG: on
+          SHADOWSOCKS: on
+          SHADOWSOCKS_LOG: on
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: slskd-portfwd-role
+  namespace: slskd
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create", "get"]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: slskd-portfwd-sa
+  namespace: slskd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: slskd-portfwd-rb
+  namespace: slskd
+subjects:
+  - kind: ServiceAccount
+    name: slskd-portfwd-sa
+    namespace: slskd
+roleRef:
+  kind: Role
+  name: slskd-portfwd-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: update-portforward
+  namespace: slskd
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: slskd-portfwd-sa
+          restartPolicy: OnFailure
+          containers:
+            - name: update-portforward
+              image: ghcr.io/tieum/slskd-port-forward-gluetun-server:main
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: NAMESPACE
+                  value: "slskd"
+                - name: LABEL_SELECTOR
+                  value: "app.kubernetes.io/name=slskd"
+                - name: POD_CONTAINER
+                  value: "slskd-vpn"
