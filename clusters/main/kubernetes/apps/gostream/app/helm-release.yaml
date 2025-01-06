@@ -35,7 +35,7 @@ spec:
     image:
       repository: webdevops/php-apache
       pullPolicy: IfNotPresent
-      tag: "8.0"
+      tag: "8.3"
 
     securityContext:
       container:
