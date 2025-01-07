@@ -89,15 +89,15 @@ spec:
       themePark:
         - name: theme-qb1
           appName: "qbittorrent"
-          themeName : "overseerr"
+          themeName : "nord"
           baseUrl: https://theme-park.dev
         - name: theme-qb2
           appName: "qbittorrent"
-          themeName : "aquamarine"
+          themeName : "overseerr"
           baseUrl: https://theme-park.dev
         - name: theme-qb3
           appName: "qbittorrent"
-          themeName : "dracula"
+          themeName : "space-gray"
           baseUrl: https://theme-park.dev
         - name: theme-qb4
           appName: "qbittorrent"

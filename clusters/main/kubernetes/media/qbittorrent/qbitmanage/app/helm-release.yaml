@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: qbitmanage
-      version: 9.0.11
+      version: 10.4.0
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -30,7 +30,12 @@ spec:
     TZ: America/Montreal
     global:
       stopAll: false
-    
+
+    image:
+      repository: docker.io/bobokun/qbit_manage
+      pullPolicy: IfNotPresent
+      tag: v4.1.15@sha256:d0ed1f22a35b732afbd7d49410bd8dfd74bd177bf53de3fedd2fdef6397b3edc
+
     credentials:
       backblaze:
         type: s3
@@ -56,6 +61,12 @@ spec:
         mountPath: /data
         server: ${NFS_SERVER_0}
         path: ${DATASET_MEDIA}
+      overseerr:
+        enabled: true
+        type: nfs
+        mountPath: /overseerr
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_OVERSEERR}/overseerr
 
     workload:
       main:
@@ -63,22 +74,8 @@ spec:
           containers:
             main:
               env:
-                QBT_CAT_UPDATE: false
-                QBT_CROSS_SEED: false
-                QBT_DRY_RUN: false
-                QBT_LOG_LEVEL: INFO
-                QBT_RECHECK: false
-                QBT_REM_ORPHANED: false
-                QBT_REM_UNREGISTERED: false
-                QBT_RUN: false
                 QBT_SCHEDULE: 1440
-                QBT_SHARE_LIMITS: false
-                QBT_SKIP_CLEANUP: false
-                QBT_SKIP_QB_VERSION_CHECK: false
-                QBT_TAG_NOHARDLINKS: false
-                QBT_TAG_TRACKER_ERROR: false
-                QBT_TAG_UPDATE: false
-                QBT_WIDTH: 100    
+                QBT_CONFIG: config*.yml
 
     addons:
       codeserver:
@@ -93,7 +90,7 @@ spec:
                   namespace: traefik
           tls:
             - hosts:
-              - qbit.cs.${DOMAIN_0}
+              - qb.cs.${DOMAIN_0}
               clusterIssuer: domain-0-cs-wildcard
           hosts:
-            - host: qbit.cs.${DOMAIN_0}
+            - host: qb.cs.${DOMAIN_0}
