@@ -54,6 +54,11 @@ spec:
         encrKey: ${BUCKET_ENCRKEY}
 
     service:
+      main-alt:
+        enabled: true
+        name: tcp
+        port: 20097
+        protocol: http
       proxy:
         enabled: true
         type: LoadBalancer
@@ -92,6 +97,17 @@ spec:
             clusterIssuer: domain-0-wildcard
         hosts:
           - host: nzb.${DOMAIN_0}
+      main-alt:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+        tls:
+          - hosts:
+            - nos.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: nos.${DOMAIN_0}
 
     persistence:
       config:
@@ -103,12 +119,30 @@ spec:
               enabled: true
             src:
               enabled: true
+      config-alt:
+        enabled: true
+        type: pvc
+        targetSelector:
+          main:
+            main:
+              mountPath: /config-alt
+            exportarr:
+              mountPath: /config-alt
+              readOnly: true
+        mountPath: /companion
+        targetSelectAll: true
       media:
         enabled: true
         type: nfs
         mountPath: /media
         server: ${NFS_SERVER_0}
         path: ${DATASET_MEDIA}
+      overseerr:
+        enabled: true
+        type: nfs
+        mountPath: /overseerr
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_OVERSEERR}/overseerr
 
     workload:
       main:
@@ -117,6 +151,17 @@ spec:
             main:
               env:
                 SABNZBD__HOST_WHITELIST_ENTRIES: nzb.${DOMAIN_0}
+      alt:
+        podSpec:
+          containers:
+            main:
+              env:
+                SABNZBD__HOST_WHITELIST_ENTRIES: nos.${DOMAIN_0}
+              volumeMounts:
+                - mountPath: /config-alt
+                  name: config-alt
+                - mountPath: /overseerr
+                  name: overseerr
 
     addons:
       vpn:
@@ -132,7 +177,7 @@ spec:
           WIREGUARD_PUBLIC_KEY: ${WIREGUARD_PUBLIC_KEY_NZB}
           WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY_NZB}
           WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES_1}
-          FIREWALL_INPUT_PORTS: ${SERVER_PORT},${PROXY_PORT},${SOCKS_PORT},${SABNZBD_PORT}
+          FIREWALL_INPUT_PORTS: ${SERVER_PORT},${PROXY_PORT},${SOCKS_PORT},${SABNZBD_PORT},${SABALT_PORT}
           DNS_KEEP_NAMESERVER: off
           HTTPPROXY: on
           HTTPPROXY_LOG: on
