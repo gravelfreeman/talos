@@ -22,3 +22,4 @@ resources:
   - stash/ks.yaml
   - tubesync/ks.yaml
   - slskd/ks.yaml
+  - tautulli/ks.yaml

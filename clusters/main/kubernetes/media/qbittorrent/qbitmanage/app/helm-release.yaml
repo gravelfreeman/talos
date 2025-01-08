@@ -91,6 +91,6 @@ spec:
           tls:
             - hosts:
               - qb.cs.${DOMAIN_0}
-              clusterIssuer: domain-0-cs-wildcard
+              clusterIssuer: domain-0-wildcard
           hosts:
             - host: qb.cs.${DOMAIN_0}

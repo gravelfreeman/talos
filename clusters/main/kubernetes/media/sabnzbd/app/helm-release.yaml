@@ -17,16 +17,19 @@ spec:
         namespace: flux-system
       interval: 15m
   postRenderers:
-  - kustomize:
-      patches:
-        - target:
-            version: v1
-            kind: Deployment
-            name: sabnzbd
-          patch: |
-            - op: add
-              path: /spec/template/spec/containers/1/resources/limits/truecharts.org~1tun
-              value: 1
+    - kustomize:
+        patches:
+          - target:
+              version: v1
+              kind: Deployment
+              name: sabnzbd
+            patch: |
+              - op: add
+                path: /spec/template/spec/containers/1/resources/limits/truecharts.org~1tun
+                value: 1
+              - op: add
+                path: /spec/template/spec/containers/2/resources/limits/truecharts.org~1tun
+                value: 1
   timeout: 20m
   maxHistory: 3
   install:
@@ -54,30 +57,26 @@ spec:
         encrKey: ${BUCKET_ENCRKEY}
 
     service:
-      main-alt:
-        enabled: true
-        name: tcp
-        port: 20097
-        protocol: http
+      main:
+        ports:
+          overseerr:
+            enabled: true
+            type: ClusterIP
+            targetSelector: overseerr
+            protocol: http
+            port: ${SABALT_PORT}
       proxy:
         enabled: true
         type: LoadBalancer
         loadBalancerIP: ${LOAD_BALANCER_NZB}
         ports:
-          proxy:
+          http:
             enabled: true
             protocol: http
-            targetPort: ${PROXY_PORT}
             port: ${PROXY_PORT}
-      socks:
-        enabled: true
-        type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_NZB}
-        ports:
           socks:
             enabled: true
             protocol: tcp
-            targetPort: ${SOCKS_PORT}
             port: ${SOCKS_PORT}
 
     ingress:
@@ -93,21 +92,28 @@ spec:
                 namespace: traefik
         tls:
           - hosts:
-            - nzb.${DOMAIN_0}
+            - sabnzbd.${DOMAIN_0}
             clusterIssuer: domain-0-wildcard
         hosts:
-          - host: nzb.${DOMAIN_0}
-      main-alt:
+          - host: sabnzbd.${DOMAIN_0}
+      overseerr:
         enabled: true
+        targetSelector:
+          main: overseerr
         integrations:
           traefik:
             enabled: true
+            middlewares:
+              - name: auth
+                namespace: traefik
+              - name: theme-overseerr
+                namespace: traefik
         tls:
           - hosts:
-            - nos.${DOMAIN_0}
+            - sabnzbd.os.${DOMAIN_0}
             clusterIssuer: domain-0-wildcard
         hosts:
-          - host: nos.${DOMAIN_0}
+          - host: sabnzbd.os.${DOMAIN_0}
 
     persistence:
       config:
@@ -124,44 +130,72 @@ spec:
         type: pvc
         targetSelector:
           main:
-            main:
-              mountPath: /config-alt
-            exportarr:
-              mountPath: /config-alt
-              readOnly: true
-        mountPath: /companion
-        targetSelectAll: true
+            overseerr:
+              mountPath: /config
+        volsync:
+          - name: cfg
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
       media:
         enabled: true
         type: nfs
-        mountPath: /media
         server: ${NFS_SERVER_0}
-        path: ${DATASET_MEDIA}
+        path: ${DATASET_MEDIA}/temp/downloads
+        targetSelector:
+          main:
+            main:
+              mountPath: /media
       overseerr:
         enabled: true
         type: nfs
-        mountPath: /overseerr
         server: ${NFS_SERVER_0}
-        path: ${DATASET_OVERSEERR}/overseerr
+        path: ${DATASET_OVERSEERR}/overseerr/sabnzbd
+        targetSelector:
+          main:
+            overseerr:
+              mountPath: /media
 
     workload:
       main:
         podSpec:
           containers:
             main:
+              securityContext:
+                privileged: true
+                capabilities:
+                  add:
+                    - NET_ADMIN
               env:
-                SABNZBD__HOST_WHITELIST_ENTRIES: nzb.${DOMAIN_0}
-      alt:
-        podSpec:
-          containers:
-            main:
+                SABNZBD__HOST_WHITELIST_ENTRIES: sabnzbd.${DOMAIN_0}
+            overseerr:
+              enabled: true
+              primary: false
+              securityContext:
+                privileged: true
+                capabilities:
+                  add:
+                    - NET_ADMIN
+              imageSelector: image
               env:
-                SABNZBD__HOST_WHITELIST_ENTRIES: nos.${DOMAIN_0}
-              volumeMounts:
-                - mountPath: /config-alt
-                  name: config-alt
-                - mountPath: /overseerr
-                  name: overseerr
+                SABNZBD__HOST_WHITELIST_ENTRIES: sabnzbd.os.${DOMAIN_0}
+                SABNZBD__PORT: "{{ $.Values.service.main.ports.overseerr.targetPort | default .Values.service.main.ports.overseerr.port }}"
+              probes:
+                liveness:
+                  enabled: true
+                  type: "{{ .Values.service.main.ports.overseerr.protocol }}"
+                  port: "{{ $.Values.service.main.ports.overseerr.targetPort | default .Values.service.main.ports.overseerr.port }}"
+                readiness:
+                  enabled: true
+                  type: "{{ .Values.service.main.ports.overseerr.protocol }}"
+                  port: "{{ $.Values.service.main.ports.overseerr.targetPort | default .Values.service.main.ports.overseerr.port }}"
+                startup:
+                  enabled: true
+                  type: "{{ .Values.service.main.ports.overseerr.protocol }}"
+                  port: "{{ $.Values.service.main.ports.overseerr.targetPort | default .Values.service.main.ports.overseerr.port }}"
 
     addons:
       vpn:

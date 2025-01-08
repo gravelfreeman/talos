@@ -86,6 +86,7 @@ spec:
           hosts:
             - '*.${DOMAIN_0}'
             - '*.cs.${DOMAIN_0}'
+            - '*.os.${DOMAIN_0}'
 
         # DOMAIN 1 WILDCARD
         - name: domain-1-wildcard

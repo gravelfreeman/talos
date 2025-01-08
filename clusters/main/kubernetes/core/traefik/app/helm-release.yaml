@@ -105,6 +105,10 @@ spec:
           baseUrl: https://theme-park.dev
         - name: theme-sabnzbd
           appName: "sabnzbd"
+          themeName : "nord"
+          baseUrl: https://theme-park.dev
+        - name: theme-overseerr
+          appName: "sabnzbd"
           themeName : "overseerr"
           baseUrl: https://theme-park.dev
         - name: theme-sonarr

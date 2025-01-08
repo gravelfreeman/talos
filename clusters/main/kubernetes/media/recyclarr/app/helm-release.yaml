@@ -74,6 +74,6 @@ spec:
           tls:
             - hosts:
               - recyclarr.cs.${DOMAIN_0}
-              clusterIssuer: domain-0-cs-wildcard
+              clusterIssuer: domain-0-wildcard
           hosts:
             - host: recyclarr.cs.${DOMAIN_0}
