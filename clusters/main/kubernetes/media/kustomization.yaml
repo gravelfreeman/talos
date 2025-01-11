@@ -23,3 +23,4 @@ resources:
   - tubesync/ks.yaml
   - slskd/ks.yaml
   - tautulli/ks.yaml
+  - maintainerr/ks.yaml
