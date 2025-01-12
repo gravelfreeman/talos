@@ -125,6 +125,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       config-alt:
         enabled: true
         type: pvc
@@ -140,6 +142,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       media:
         enabled: true
         type: nfs

@@ -67,6 +67,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       data:
         volsync:
           - name: dat
@@ -76,6 +78,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       backupdirectory:
         volsync:
           - name: bkp
@@ -85,6 +89,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       shareaccess:
         volsync:
           - name: sha
@@ -94,6 +100,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       userdata:
         enabled: true
         type: nfs

@@ -31,7 +31,12 @@ spec:
   values:
     TZ: America/Montreal
     global:
-      stopAll: false
+      stopAll: true
+
+    mohImage:
+      repository: gsariev/maintainerr-overlay-helperr
+      tag: latest@sha256:20e48c8877001b16f18eb24b7ad4e77ec3a2325d1c3f4d9beb58a100ba660e40
+      pullPolicy: IfNotPresent
 
     credentials:
       backblaze:
@@ -42,8 +47,18 @@ spec:
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
 
+    kometa:
+      no_countdown: false
+      run: ""
+      time: ""
+
     persistence:
       config:
+        targetSelectAll: false
+        targetSelector:
+          main:
+            main:
+              mountPath: /config
         volsync:
           - name: cfg
             type: restic
@@ -52,6 +67,64 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
+      mohelper:
+        enabled: true
+        type: pvc
+        targetSelector:
+          main:
+            moh:
+              mountPath: /data
+        volsync:
+          - name: dat
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 3 * * *
+
+    workload:
+      main:
+        podSpec:
+          containers:
+            moh:
+              enabled: true
+              primary: false
+              securityContext:
+                runAsNonRoot: false
+                readOnlyRootFilesystem: false
+                runAsUser: 0
+                runAsGroup: 0
+              imageSelector: mohImage
+              env:
+                PLEX_URL: http://${LOAD_BALANCER_PLEX}:32400
+                PLEX_TOKEN: ${PLEX_TOKEN}
+                MAINTAINERR_URL: http://maintainerr.maintainerr.svc.cluster.local:6246/api/collections
+                IMAGE_SAVE_PATH: /data/images
+                ORIGINAL_IMAGE_PATH: /data/images/originals
+                TEMP_IMAGE_PATH: /data/images/temp
+                FONT_PATH: /data/fonts/AvenirNextLTPro-Bold.ttf
+                FONT_COLOR: "#ffffff"
+                BACK_COLOR: "#B20710"
+                FONT_SIZE: 45
+                PADDING: 15
+                BACK_RADIUS: 20
+                HORIZONTAL_OFFSET: 35
+                HORIZONTAL_ALIGN: left
+                VERTICAL_OFFSET: 50
+                VERTICAL_ALIGN: bottom
+                RUN_INTERVAL: 480
+              probes:
+                liveness:
+                  enabled: false
+                readiness:
+                  enabled: false
+                startup:
+                  enabled: false
 
     addons:
       codeserver:

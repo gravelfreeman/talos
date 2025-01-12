@@ -69,6 +69,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       public:
         enabled: true
         mountPath: /app/public/images
@@ -80,6 +82,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
     
     addons:
       codeserver:

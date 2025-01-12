@@ -25,3 +25,4 @@ resources:
   - tautulli/ks.yaml
   - maintainerr/ks.yaml
   - kometa/ks.yaml
+  # - plex/ks.yaml

@@ -51,7 +51,7 @@ spec:
           singleNode: true
         backups:
           enabled: true
-          revision: "2"
+          revision: "3"
           credentials: backblaze
         recovery:
           credentials: backblaze
@@ -92,20 +92,28 @@ spec:
         volsync:
           - name: cfg
             type: restic
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       html:
         volsync:
           - name: htm
             type: restic
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       data:
         enabled: true
         type: nfs

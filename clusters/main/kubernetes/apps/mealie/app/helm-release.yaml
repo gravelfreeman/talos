@@ -35,10 +35,11 @@ spec:
           singleNode: true
         backups:
           enabled: true
-          revision: "3"
+          revision: "4"
           credentials: backblaze
         recovery:
           credentials: backblaze
+          revision: "3"
 
     ingress:
       main:
@@ -63,6 +64,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
 
     workload:
       main:

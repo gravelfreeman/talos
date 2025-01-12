@@ -67,6 +67,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       cache:
         volsync:
           - name: cch
@@ -76,6 +78,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       logs:
         volsync:
           - name: lgs
@@ -85,6 +89,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       backups:
         enabled: true
         type: nfs

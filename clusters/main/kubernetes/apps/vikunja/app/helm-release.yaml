@@ -77,6 +77,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       files:
         volsync:
           - name: dat
@@ -86,6 +88,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
 
     vikunja:
       service:

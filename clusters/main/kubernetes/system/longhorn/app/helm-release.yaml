@@ -38,15 +38,42 @@ spec:
         # Increase to 3 for a multi-node cluster
         defaultClassReplicaCount: 1
 ---
-# This runs a filesystem trim on midnight cet. To free the “used” space.
 apiVersion: longhorn.io/v1beta2
 kind: RecurringJob
 metadata:
-  name: trim
+  name: snapshot-delete
   namespace: longhorn-system
 spec:
   concurrency: 1
-  cron: 0 0 * * *
+  cron: 0 4 * * *
+  groups:
+  - default
+  name: trim
+  retain: 0
+  task: snapshot-delete
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: snapshot-cleanup
+  namespace: longhorn-system
+spec:
+  concurrency: 1
+  cron: 20 4 * * *
+  groups:
+  - default
+  name: trim
+  retain: 0
+  task: snapshot-cleanup
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: filesystem-trim
+  namespace: longhorn-system
+spec:
+  concurrency: 1
+  cron: 40 4 * * *
   groups:
   - default
   name: trim

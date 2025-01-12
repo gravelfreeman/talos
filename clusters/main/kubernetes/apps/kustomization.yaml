@@ -10,7 +10,7 @@ resources:
   - thelounge/ks.yaml
   - mealie/ks.yaml
   - vikunja/ks.yaml
-  - actualserver/ks.yaml
+  # - actualserver/ks.yaml
   - duplicacy/ks.yaml
   - homebox/ks.yaml
   - maloja/ks.yaml

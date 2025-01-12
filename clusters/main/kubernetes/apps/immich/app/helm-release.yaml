@@ -79,6 +79,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       profile:
         volsync:
           - name: prf
@@ -88,6 +90,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       thumbs:
         volsync:
           - name: thn
@@ -97,6 +101,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       uploads:
         volsync:
           - name: upl
@@ -106,6 +112,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       video:
         volsync:
           - name: vid
@@ -115,6 +123,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       user10:
         enabled: true
         type: nfs

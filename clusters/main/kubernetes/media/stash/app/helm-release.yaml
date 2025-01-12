@@ -66,6 +66,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       data:
         volsync:
           - name: dat
@@ -75,6 +77,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       metadata:
         volsync:
           - name: md
@@ -84,6 +88,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       generated:
         volsync:
           - name: str
@@ -93,6 +99,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       cache:
         volsync:
           - name: cch
@@ -102,6 +110,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       blobs:
         volsync:
           - name: blb
@@ -111,6 +121,8 @@ spec:
               enabled: true
             src:
               enabled: true
+              trigger:
+                schedule: 0 3 * * *
       media:
         enabled: true
         type: nfs
