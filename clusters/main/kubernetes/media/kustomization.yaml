@@ -24,3 +24,4 @@ resources:
   - slskd/ks.yaml
   - tautulli/ks.yaml
   - maintainerr/ks.yaml
+  - kometa/ks.yaml
