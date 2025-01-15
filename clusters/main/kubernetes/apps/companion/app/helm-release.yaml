@@ -35,7 +35,7 @@ spec:
     image:
       repository: ghcr.io/bitfocus/companion/companion
       pullPolicy: IfNotPresent
-      tag: v3.4.3
+      tag: v3.4.4
 
     credentials:
       backblaze:

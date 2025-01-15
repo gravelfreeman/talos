@@ -42,7 +42,7 @@ spec:
   values:
     TZ: America/Montreal
     global:
-      stopAll: true
+      stopAll: false
     
     credentials:
       backblaze:
@@ -54,7 +54,7 @@ spec:
         encrKey: ${BUCKET_ENCRKEY}
         
     qbitportforward:
-      enabled: false
+      enabled: true
       QBT_USERNAME: ${QBT_USERNAME}
       QBT_PASSWORD: ${QBT_PASSWORD}
 
@@ -81,8 +81,6 @@ spec:
         volsync:
           - name: cfg
             type: restic
-            cleanupTempPVC: true
-            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true
