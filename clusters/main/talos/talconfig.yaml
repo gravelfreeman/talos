@@ -28,7 +28,7 @@ nodes:
       nameservers:
         - 10.0.20.1
       installDiskSelector:
-        size: <= 1600GB
+        size: <= 2200GB
       networkInterfaces:
         # suffix is the adapter mac adres.
         - interface: eth0
@@ -42,6 +42,7 @@ nodes:
 controlPlane:
     patches:
         - '@./patches/controlplane.yaml'
+        - '@./patches/gpu.yaml'
     kernelModules:
      - name: nvme_tcp
      - name: vfio_pci
@@ -55,6 +56,8 @@ controlPlane:
                     - siderolabs/util-linux-tools
                     - siderolabs/iscsi-tools
                     - siderolabs/qemu-guest-agent
+                    - siderolabs/nonfree-kmod-nvidia-lts
+                    - siderolabs/nvidia-container-toolkit-lts
     machineFiles:
     - content: |
         [plugins."io.containerd.grpc.v1.cri"]

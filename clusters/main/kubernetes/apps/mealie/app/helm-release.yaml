@@ -35,11 +35,11 @@ spec:
           singleNode: true
         backups:
           enabled: true
-          revision: "4"
+          revision: "5"
           credentials: backblaze
         recovery:
+          revision: "4"
           credentials: backblaze
-          revision: "3"
 
     ingress:
       main:

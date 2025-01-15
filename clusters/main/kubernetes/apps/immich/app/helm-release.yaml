@@ -51,9 +51,10 @@ spec:
           singleNode: true
         backups:
           enabled: true
-          revision: "1"
+          revision: "2"
           credentials: backblaze
         recovery:
+          revision: "1"
           credentials: backblaze
   
     ingress:
@@ -70,6 +71,17 @@ spec:
           - host: photos.${DOMAIN_0}
     
     persistence:
+      backups:
+        volsync:
+          - name: bkp
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 3 * * *
       library:
         volsync:
           - name: lib
