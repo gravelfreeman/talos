@@ -52,6 +52,9 @@ spec:
                 namespace: traefik 
               - name: traefik-dashboard
                 namespace: traefik
+            fixedMiddlewares:
+            - name: chain-basic
+              namespace: traefik
         tls:
           - hosts:
             - traefik.${DOMAIN_0}

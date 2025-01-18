@@ -15,7 +15,7 @@ spec:
         kind: HelmRepository
         name: truecharts
         namespace: flux-system
-  timeout: 20m
+  timeout: 60m
   maxHistory: 3
   driftDetection:
     mode: warn
@@ -75,6 +75,8 @@ spec:
         volsync:
           - name: bkp
             type: restic
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true
@@ -86,6 +88,8 @@ spec:
         volsync:
           - name: lib
             type: restic
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true
@@ -97,6 +101,8 @@ spec:
         volsync:
           - name: prf
             type: restic
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true
@@ -108,6 +114,8 @@ spec:
         volsync:
           - name: thn
             type: restic
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true
@@ -119,6 +127,8 @@ spec:
         volsync:
           - name: upl
             type: restic
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true
@@ -130,6 +140,8 @@ spec:
         volsync:
           - name: vid
             type: restic
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true

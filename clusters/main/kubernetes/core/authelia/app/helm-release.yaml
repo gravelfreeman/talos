@@ -32,7 +32,7 @@ spec:
     global:
       stopAll: false
     log:
-      level: debug
+      level: info
     
     credentials:
       backblaze:
@@ -51,10 +51,9 @@ spec:
           singleNode: true
         backups:
           enabled: true
-          revision: "2"
+          revision: "1"
           credentials: backblaze
         recovery:
-          revision: "1"
           credentials: backblaze
 
     workload:

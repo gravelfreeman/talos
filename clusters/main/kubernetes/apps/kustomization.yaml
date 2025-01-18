@@ -26,4 +26,3 @@ resources:
   - rtmp-hls/ks.yaml
   - flatnotes/ks.yaml
   - gostream/ks.yaml
-  - kubernetes-dashboard/ks.yaml

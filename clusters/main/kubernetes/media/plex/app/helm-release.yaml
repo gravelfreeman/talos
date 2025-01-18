@@ -72,6 +72,8 @@ spec:
             type: restic
             cleanupTempPVC: true
             cleanupCachePVC: true
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true
