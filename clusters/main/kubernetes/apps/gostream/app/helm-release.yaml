@@ -82,6 +82,8 @@ spec:
         volsync:
           - name: app
             type: restic
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true

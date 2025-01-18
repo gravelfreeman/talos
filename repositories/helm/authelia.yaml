@@ -3,8 +3,8 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-    name: authelia
-    namespace: flux-system
+  name: authelia
+  namespace: flux-system
 spec:
-    interval: 5m
-    url: https://charts.authelia.com
+  interval: 5m
+  url: https://charts.authelia.com

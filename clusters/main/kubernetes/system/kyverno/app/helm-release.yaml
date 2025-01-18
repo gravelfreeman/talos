@@ -31,8 +31,6 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    TZ: America/Montreal
-
     crds:
       install: true
     grafana:

@@ -51,10 +51,9 @@ spec:
           singleNode: true
         backups:
           enabled: true
-          revision: "2"
+          revision: "1"
           credentials: backblaze
         recovery:
-          revision: "1"
           credentials: backblaze
 
     ingress:
@@ -78,6 +77,8 @@ spec:
         volsync:
           - name: cfg
             type: restic
+            cleanupTempPVC: true
+            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true

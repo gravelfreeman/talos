@@ -1,7 +1,9 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-    name: splitpro
-    labels:
-        pod-security.kubernetes.io/enforce: privileged
-        topolvm.io/webhook: ignore
+  name: splitpro
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+    topolvm.io/webhook: ignore
+  annotations:
+    volsync.backube/privileged-movers: true
