@@ -1,28 +1,28 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - shlink
-  - homepage/ks.yaml
-  - whisper-asr-webservice/ks.yaml
-  - nextcloud/ks.yaml
-  - immich/ks.yaml
-  - dell-idrac-fan-controller/ks.yaml
-  - thelounge/ks.yaml
-  - mealie/ks.yaml
-  - vikunja/ks.yaml
   # - actualserver/ks.yaml
-  - duplicacy/ks.yaml
+  - changedetection/ks.yaml
+  - companion/ks.yaml
+  - dell-idrac-fan-controller/ks.yaml
+  # - duplicacy/ks.yaml
+  # - flatnotes/ks.yaml
+  # - gostream/ks.yaml
   - homebox/ks.yaml
+  # - homepage/ks.yaml
+  # - immich/ks.yaml
   - maloja/ks.yaml
+  - mealie/ks.yaml
   - multi-scrobbler/ks.yaml
+  # - nextcloud/ks.yaml
   - projectsend/ks.yaml
-  - sftpgo/ks.yaml
+  - rtmp-hls/ks.yaml
+  # - sftpgo/ks.yaml
+  - shlink
   - snapdrop/ks.yaml
   - speedtest-tracker/ks.yaml
-  - stirling-pdf/ks.yaml
-  - companion/ks.yaml
   - splitpro/ks.yaml
-  - changedetection/ks.yaml
-  - rtmp-hls/ks.yaml
-  - flatnotes/ks.yaml
-  - gostream/ks.yaml
+  # - stirling-pdf/ks.yaml
+  - thelounge/ks.yaml
+  - vikunja/ks.yaml
+  - whisper-asr-webservice/ks.yaml
