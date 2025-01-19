@@ -45,13 +45,12 @@ spec:
 
     cnpg:
       main:
-        mode: recovery
+        mode: standalone
         password: ${CNPG_PASSWORD_AUTHELIA}
         cluster:
           singleNode: true
         backups:
           enabled: true
-          revision: "1"
           credentials: backblaze
         recovery:
           credentials: backblaze
@@ -142,61 +141,60 @@ spec:
       oidc:
         enabled: true
         clients:
+          # # NEXTCLOUD
+          # - id: ${OIDC_CLIENT_ID_NEXTCLOUD}
+          #   secret: ${OIDC_SECRET_NEXTCLOUD}
+          #   description: Freeman • Cloud
+          #   public: false
+          #   authorization_policy: two_factor
+          #   consent_mode: implicit
+          #   require_pkce: true
+          #   pkce_challange_method: S256
+          #   redirect_uris:
+          #   - https://cloud.${DOMAIN_0}/apps/oidc_login/oidc
+          #   scopes:
+          #   - openid
+          #   - profile
+          #   - email
+          #   - groups
+          #   userinfo_signing_algorithm: none
+          #   token_endpoint_auth_method: client_secret_basic
 
-          # NEXTCLOUD
-          - id: ${OIDC_CLIENT_ID_NEXTCLOUD}
-            secret: ${OIDC_SECRET_NEXTCLOUD}
-            description: Freeman • Cloud
-            public: false
-            authorization_policy: two_factor
-            consent_mode: implicit
-            require_pkce: true
-            pkce_challange_method: S256
-            redirect_uris:
-            - https://cloud.${DOMAIN_0}/apps/oidc_login/oidc
-            scopes:
-            - openid
-            - profile
-            - email
-            - groups
-            userinfo_signing_algorithm: none
-            token_endpoint_auth_method: client_secret_basic
+          # # IMMICH
+          # - id: ${OIDC_CLIENT_ID_IMMICH}
+          #   secret: ${OIDC_SECRET_IMMICH}
+          #   description: Freeman • Photos
+          #   public: false
+          #   authorization_policy: two_factor
+          #   consent_mode: implicit
+          #   redirect_uris:
+          #   - https://photos.${DOMAIN_0}/auth/login
+          #   - https://photos.${DOMAIN_0}/user-settings
+          #   - app.immich:///oauth-callback
+          #   scopes:
+          #   - openid
+          #   - profile
+          #   - email
+          #   - groups
+          #   userinfo_signing_algorithm: none
 
-          # IMMICH
-          - id: ${OIDC_CLIENT_ID_IMMICH}
-            secret: ${OIDC_SECRET_IMMICH}
-            description: Freeman • Photos
-            public: false
-            authorization_policy: two_factor
-            consent_mode: implicit
-            redirect_uris:
-            - https://photos.${DOMAIN_0}/auth/login
-            - https://photos.${DOMAIN_0}/user-settings
-            - app.immich:///oauth-callback
-            scopes:
-            - openid
-            - profile
-            - email
-            - groups
-            userinfo_signing_algorithm: none
-
-          # MEALIE
-          - id: ${OIDC_CLIENT_ID_MEALIE}
-            secret: ${OIDC_SECRET_MEALIE}
-            description: Mealie
-            public: false
-            authorization_policy: two_factor
-            consent_mode: implicit
-            require_pkce: true
-            pkce_challenge_method: S256
-            redirect_uris:
-            - https://mealie.${DOMAIN_0}/login
-            scopes:
-            - openid
-            - email
-            - profile
-            - groups
-            userinfo_signed_response_alg: none
+          # # MEALIE
+          # - id: ${OIDC_CLIENT_ID_MEALIE}
+          #   secret: ${OIDC_SECRET_MEALIE}
+          #   description: Mealie
+          #   public: false
+          #   authorization_policy: two_factor
+          #   consent_mode: implicit
+          #   require_pkce: true
+          #   pkce_challenge_method: S256
+          #   redirect_uris:
+          #   - https://mealie.${DOMAIN_0}/login
+          #   scopes:
+          #   - openid
+          #   - email
+          #   - profile
+          #   - groups
+          #   userinfo_signed_response_alg: none
 
           # VIKUNJA
           - id: ${OIDC_CLIENT_ID_VIKUNJA}
