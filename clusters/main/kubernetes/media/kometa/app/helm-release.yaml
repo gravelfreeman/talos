@@ -62,7 +62,6 @@ spec:
         volsync:
           - name: cfg
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -81,7 +80,6 @@ spec:
         volsync:
           - name: dat
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -105,7 +103,7 @@ spec:
                 runAsGroup: 0
               imageSelector: mohImage
               env:
-                PLEX_URL: http://${LOAD_BALANCER_PLEX}:32400
+                PLEX_URL: http://${LOAD_BALANCER_PLX}:32400
                 PLEX_TOKEN: ${PLEX_TOKEN}
                 MAINTAINERR_URL: http://maintainerr.maintainerr.svc.cluster.local:6246/api/collections
                 IMAGE_SAVE_PATH: /data/images

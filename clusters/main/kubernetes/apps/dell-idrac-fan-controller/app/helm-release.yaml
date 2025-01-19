@@ -38,7 +38,7 @@ spec:
       main:
         enabled: true
         type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_IDRAC}
+        loadBalancerIP: ${LOAD_BALANCER_IDC}
         ports:
           main:
             enabled: true

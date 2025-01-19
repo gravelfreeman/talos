@@ -3,16 +3,16 @@ kind: Kustomization
 resources:
   - archivebox/ks.yaml
   - audiobookshelf/ks.yaml
-  # - autobrr/ks.yaml
-  # - bazarr/ks.yaml
-  # - jdownloader/ks.yaml
+  - autobrr/ks.yaml
+  - bazarr/ks.yaml
+  - jdownloader/ks.yaml
   # - kavita/ks.yaml
-  - kometa/ks.yaml
+  # - kometa/ks.yaml
   - lidarr/ks.yaml
   - maintainerr/ks.yaml
   - makemkv/ks.yaml
   - metube/ks.yaml
-  # - overseerr/ks.yaml
+  - overseerr/ks.yaml
   # - plex/ks.yaml
   - prowlarr/ks.yaml
   - qbittorrent
@@ -20,9 +20,9 @@ resources:
   - readarr/ks.yaml
   - recyclarr/ks.yaml
   - sabnzbd/ks.yaml
-  # - slskd/ks.yaml
+  - slskd/ks.yaml
   - sonarr/ks.yaml
-  # - stash/ks.yaml
+  - stash/ks.yaml
   - tautulli/ks.yaml
   - tubesync/ks.yaml
   - watcharr/ks.yaml

@@ -44,7 +44,7 @@ spec:
     service:
       main:
         type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_ARCHIVEBOX}
+        loadBalancerIP: ${LOAD_BALANCER_ACB}
 
     ingress:
       main:
@@ -67,7 +67,6 @@ spec:
         volsync:
           - name: dat
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:

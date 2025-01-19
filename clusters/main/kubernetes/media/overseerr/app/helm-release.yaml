@@ -60,7 +60,6 @@ spec:
         volsync:
           - name: cfg
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -75,7 +74,6 @@ spec:
         volsync:
           - name: pub
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:

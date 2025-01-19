@@ -49,7 +49,7 @@ spec:
     service:
       main:
         type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_COMPANION}
+        loadBalancerIP: ${LOAD_BALANCER_CPN}
         ports:
           main:
             port: 8000
@@ -98,7 +98,6 @@ spec:
         volsync:
           - name: cfg
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:

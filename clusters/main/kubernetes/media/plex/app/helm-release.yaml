@@ -46,7 +46,7 @@ spec:
     service:
       main:
         type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_PLEX}
+        loadBalancerIP: ${LOAD_BALANCER_PLX}
 
     ingress:
       main:
@@ -70,9 +70,6 @@ spec:
         volsync:
           - name: cfg
             type: restic
-            cleanupTempPVC: true
-            cleanupCachePVC: true
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -95,7 +92,7 @@ spec:
         path: ${DATASET_OVERSEERR}/overseerr
 
     plex:
-      serverIP: ${LOAD_BALANCER_PLEX}
+      serverIP: ${LOAD_BALANCER_PLX}
 
     workload:
       main:

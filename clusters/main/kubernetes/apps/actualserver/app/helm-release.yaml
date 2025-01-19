@@ -62,7 +62,6 @@ spec:
         volsync:
           - name: svr
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -75,7 +74,6 @@ spec:
         volsync:
           - name: uer
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:

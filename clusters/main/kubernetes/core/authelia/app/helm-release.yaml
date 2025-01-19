@@ -30,7 +30,7 @@ spec:
   values:
     TZ: America/Montreal
     global:
-      stopAll: true
+      stopAll: false
     log:
       level: info
     
@@ -45,12 +45,13 @@ spec:
 
     cnpg:
       main:
-        mode: standalone
+        mode: recovery
         password: ${CNPG_PASSWORD_AUTHELIA}
         cluster:
           singleNode: true
         backups:
           enabled: true
+          revision: "1"
           credentials: backblaze
         recovery:
           credentials: backblaze
@@ -70,7 +71,6 @@ spec:
           - name: cfg
             type: restic
             credentials: backblaze
-            cleanupTempPVC: true
             cleanupCachePVC: true
             dest:
               enabled: true
@@ -90,11 +90,11 @@ spec:
         enabled: true
         implementation: custom
         url: ldap://lldap-ldap.lldap.svc.cluster.local:3890
-        base_dn: dc=${USER_10},dc=${DOMAIN_TLD_0}
+        base_dn: dc=${USER_1},dc=${DOMAIN_TLD_0}
         additional_users_dn: ou=people
         users_filter: (&({username_attribute}={input})(objectClass=person))
         groups_filter: (member={dn})
-        user: uid=${LDAP_USER_DN},ou=people,dc=${USER_10},dc=${DOMAIN_TLD_0}
+        user: uid=${USER_0},ou=people,dc=${USER_1},dc=${DOMAIN_TLD_0}
         plain_password: ${LDAP_USER_PASS}
       file:
         enabled: false
@@ -141,60 +141,60 @@ spec:
       oidc:
         enabled: true
         clients:
-          # # NEXTCLOUD
-          # - id: ${OIDC_CLIENT_ID_NEXTCLOUD}
-          #   secret: ${OIDC_SECRET_NEXTCLOUD}
-          #   description: Freeman • Cloud
-          #   public: false
-          #   authorization_policy: two_factor
-          #   consent_mode: implicit
-          #   require_pkce: true
-          #   pkce_challange_method: S256
-          #   redirect_uris:
-          #   - https://cloud.${DOMAIN_0}/apps/oidc_login/oidc
-          #   scopes:
-          #   - openid
-          #   - profile
-          #   - email
-          #   - groups
-          #   userinfo_signing_algorithm: none
-          #   token_endpoint_auth_method: client_secret_basic
+          # NEXTCLOUD
+          - id: ${OIDC_CLIENT_ID_NEXTCLOUD}
+            secret: ${OIDC_SECRET_NEXTCLOUD}
+            description: Freeman • Cloud
+            public: false
+            authorization_policy: two_factor
+            consent_mode: implicit
+            require_pkce: true
+            pkce_challange_method: S256
+            redirect_uris:
+            - https://cloud.${DOMAIN_0}/apps/oidc_login/oidc
+            scopes:
+            - openid
+            - profile
+            - email
+            - groups
+            userinfo_signing_algorithm: none
+            token_endpoint_auth_method: client_secret_basic
 
-          # # IMMICH
-          # - id: ${OIDC_CLIENT_ID_IMMICH}
-          #   secret: ${OIDC_SECRET_IMMICH}
-          #   description: Freeman • Photos
-          #   public: false
-          #   authorization_policy: two_factor
-          #   consent_mode: implicit
-          #   redirect_uris:
-          #   - https://photos.${DOMAIN_0}/auth/login
-          #   - https://photos.${DOMAIN_0}/user-settings
-          #   - app.immich:///oauth-callback
-          #   scopes:
-          #   - openid
-          #   - profile
-          #   - email
-          #   - groups
-          #   userinfo_signing_algorithm: none
+          # IMMICH
+          - id: ${OIDC_CLIENT_ID_IMMICH}
+            secret: ${OIDC_SECRET_IMMICH}
+            description: Freeman • Photos
+            public: false
+            authorization_policy: two_factor
+            consent_mode: implicit
+            redirect_uris:
+            - https://photos.${DOMAIN_0}/auth/login
+            - https://photos.${DOMAIN_0}/user-settings
+            - app.immich:///oauth-callback
+            scopes:
+            - openid
+            - profile
+            - email
+            - groups
+            userinfo_signing_algorithm: none
 
-          # # MEALIE
-          # - id: ${OIDC_CLIENT_ID_MEALIE}
-          #   secret: ${OIDC_SECRET_MEALIE}
-          #   description: Mealie
-          #   public: false
-          #   authorization_policy: two_factor
-          #   consent_mode: implicit
-          #   require_pkce: true
-          #   pkce_challenge_method: S256
-          #   redirect_uris:
-          #   - https://mealie.${DOMAIN_0}/login
-          #   scopes:
-          #   - openid
-          #   - email
-          #   - profile
-          #   - groups
-          #   userinfo_signed_response_alg: none
+          # MEALIE
+          - id: ${OIDC_CLIENT_ID_MEALIE}
+            secret: ${OIDC_SECRET_MEALIE}
+            description: Mealie
+            public: false
+            authorization_policy: two_factor
+            consent_mode: implicit
+            require_pkce: true
+            pkce_challenge_method: S256
+            redirect_uris:
+            - https://mealie.${DOMAIN_0}/login
+            scopes:
+            - openid
+            - email
+            - profile
+            - groups
+            userinfo_signed_response_alg: none
 
           # VIKUNJA
           - id: ${OIDC_CLIENT_ID_VIKUNJA}
@@ -214,7 +214,6 @@ spec:
 
     access_control:
       rules:
-
         # GENERIC API
         - domain:
           - "*.${DOMAIN_0}"
@@ -253,14 +252,14 @@ spec:
           - '^/socket\.io([/?].*)?$'
           subject: user:${USER_99}
 
-        # USER_11
+        # USER_2
         - domain:
           - "split.${DOMAIN_0}"
           - "homebox.${DOMAIN_0}"
           - "mealie.${DOMAIN_0}"
           - "stash.${DOMAIN_0}"
           policy: two_factor
-          subject: user:${USER_11}
+          subject: user:${USER_2}
 
         # USER GROUP
         - domain:

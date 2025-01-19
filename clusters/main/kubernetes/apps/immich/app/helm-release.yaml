@@ -75,7 +75,6 @@ spec:
         volsync:
           - name: bkp
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -88,7 +87,6 @@ spec:
         volsync:
           - name: lib
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -101,7 +99,6 @@ spec:
         volsync:
           - name: prf
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -114,7 +111,6 @@ spec:
         volsync:
           - name: thn
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -127,7 +123,6 @@ spec:
         volsync:
           - name: upl
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -140,7 +135,6 @@ spec:
         volsync:
           - name: vid
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -152,12 +146,12 @@ spec:
       user10:
         enabled: true
         type: nfs
-        mountPath: /usr/src/app/upload/library/${USER_10}
+        mountPath: /usr/src/app/upload/library/${USER_1}
         server: ${NFS_SERVER_0}
-        path: ${DATASET_USERS}/${USER_10}/Photos
+        path: ${DATASET_USERS}/${USER_1}/Photos
       user11:
         enabled: true
         type: nfs
-        mountPath: /usr/src/app/upload/library/${USER_11}
+        mountPath: /usr/src/app/upload/library/${USER_2}
         server: ${NFS_SERVER_0}
-        path: ${DATASET_USERS}/${USER_11}/Photos
+        path: ${DATASET_USERS}/${USER_2}/Photos

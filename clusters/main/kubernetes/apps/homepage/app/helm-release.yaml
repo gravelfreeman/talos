@@ -43,6 +43,11 @@ spec:
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
 
+    service:
+      main:
+        type: LoadBalancer
+        loadBalancerIP: ${LOAD_BALANCER_HPE}
+
     ingress:
       main:
         enabled: true
@@ -64,7 +69,6 @@ spec:
         volsync:
           - name: cfg
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -79,7 +83,6 @@ spec:
         volsync:
           - name: pub
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
