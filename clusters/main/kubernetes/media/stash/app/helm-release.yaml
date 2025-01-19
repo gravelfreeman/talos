@@ -61,7 +61,6 @@ spec:
         volsync:
           - name: cfg
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -74,7 +73,6 @@ spec:
         volsync:
           - name: dat
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -87,7 +85,6 @@ spec:
         volsync:
           - name: md
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -100,7 +97,6 @@ spec:
         volsync:
           - name: str
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -113,7 +109,6 @@ spec:
         volsync:
           - name: cch
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -126,7 +121,6 @@ spec:
         volsync:
           - name: blb
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:

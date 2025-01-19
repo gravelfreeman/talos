@@ -25,3 +25,5 @@ spec:
       retries: 3
   values:
     TZ: America/Montreal
+    global:
+      stopAll: true

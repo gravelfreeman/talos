@@ -41,11 +41,6 @@ spec:
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
 
-    service:
-      main:
-        type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_ARCHIVEBOX}
-
     ingress:
       main:
         enabled: true
@@ -67,7 +62,6 @@ spec:
         volsync:
           - name: dat
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:

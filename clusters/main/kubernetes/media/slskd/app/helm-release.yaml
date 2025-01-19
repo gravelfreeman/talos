@@ -57,7 +57,7 @@ spec:
       proxy:
         enabled: true
         type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_SLSKD}
+        loadBalancerIP: ${LOAD_BALANCER_SSD}
         ports:
           proxy:
             enabled: true
@@ -67,7 +67,7 @@ spec:
       socks:
         enabled: true
         type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_SLSKD}
+        loadBalancerIP: ${LOAD_BALANCER_SSD}
         ports:
           socks:
             enabled: true
@@ -96,7 +96,6 @@ spec:
         volsync:
           - name: cfg
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -105,21 +104,16 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 3 * * *
+      downloads:
+        type: nfs
+        mountPath: /downloads
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_MEDIA}/temp/downloads/slskd
       share:
         type: nfs
         mountPath: /share
         server: ${NFS_SERVER_0}
         path: ${DATASET_MEDIA}/temp/downloads/music
-      incomplete:
-        type: nfs
-        mountPath: /downloads/incomplete
-        server: ${NFS_SERVER_0}
-        path: ${DATASET_MEDIA}/temp/downloads/soulseek/.temp
-      complete:
-        type: nfs
-        mountPath: /downloads/complete
-        server: ${NFS_SERVER_0}
-        path: ${DATASET_MEDIA}/temp/downloads/soulseek
 
     workload:
       main:

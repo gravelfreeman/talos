@@ -62,7 +62,6 @@ spec:
         volsync:
           - name: dat
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:

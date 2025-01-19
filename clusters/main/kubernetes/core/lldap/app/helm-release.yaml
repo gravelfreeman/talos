@@ -62,9 +62,9 @@ spec:
         integrations:
           traefik:
             enabled: true
-            # middlewares:
-            #   - name: auth
-            #     namespace: traefik
+            middlewares:
+              - name: auth
+                namespace: traefik
         tls:
           - hosts:
             - ldap.${DOMAIN_0}
@@ -77,7 +77,6 @@ spec:
         volsync:
           - name: cfg
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:
@@ -94,7 +93,7 @@ spec:
             main:
               env:
                 LLDAP_HTTP_URL: https://lldap.${DOMAIN_0}
-                LLDAP_LDAP_BASE_DN: dc=${USER_10},dc=${DOMAIN_TLD_0}
-                LDAP_USER_DN: ${LDAP_USER_DN}
+                LLDAP_LDAP_BASE_DN: dc=${USER_1},dc=${DOMAIN_TLD_0}
+                LDAP_USER_DN: ${USER_0}
                 LLDAP_LDAP_USER_EMAIL: ${LDAP_USER_EMAIL}
                 LLDAP_LDAP_USER_PASS: ${LDAP_USER_PASS}

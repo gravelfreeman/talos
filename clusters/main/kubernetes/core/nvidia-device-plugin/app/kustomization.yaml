@@ -2,8 +2,4 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
-  - qb1/ks.yaml
-  - qb2/ks.yaml
-  - qb3/ks.yaml
-  - qb4/ks.yaml
-  - qbitmanage/ks.yaml
+  - helm-release.yaml
