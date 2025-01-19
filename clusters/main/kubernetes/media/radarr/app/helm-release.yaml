@@ -42,7 +42,7 @@ spec:
         accessKey: ${BUCKET_ACCESSKEY}
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
-    
+
     ingress:
       main:
         enabled: true
@@ -67,7 +67,6 @@ spec:
         volsync:
           - name: cfg
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:

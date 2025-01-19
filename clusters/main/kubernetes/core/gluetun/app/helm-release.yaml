@@ -58,7 +58,7 @@ spec:
       proxy:
         enabled: true
         type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_GLUETUN}
+        loadBalancerIP: ${LOAD_BALANCER_GTN}
         ports:
           proxy:
             enabled: true
@@ -68,7 +68,7 @@ spec:
       socks:
         enabled: true
         type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_GLUETUN}
+        loadBalancerIP: ${LOAD_BALANCER_GTN}
         ports:
           socks:
             enabled: true

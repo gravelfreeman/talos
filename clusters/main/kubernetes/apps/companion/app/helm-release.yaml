@@ -49,7 +49,10 @@ spec:
     service:
       main:
         type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_COMPANION}
+        # annotations:
+        #   metallb.io/allow-shared-ip: main
+        loadBalancerIP: ${LOAD_BALANCER_CPN}
+        # externalTrafficPolicy: Local
         ports:
           main:
             port: 8000
@@ -98,7 +101,6 @@ spec:
         volsync:
           - name: cfg
             type: restic
-            cleanupTempPVC: true
             cleanupCachePVC: true
             credentials: backblaze
             dest:

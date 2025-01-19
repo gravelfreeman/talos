@@ -15,7 +15,7 @@ spec:
         kind: HelmRepository
         name: truecharts
         namespace: flux-system
-  timeout: 20m
+  timeout: 240m
   maxHistory: 3
   driftDetection:
     mode: warn
@@ -59,7 +59,7 @@ spec:
     
     nextcloud:
       credentials:
-        initialAdminUser: ${USER_10}
+        initialAdminUser: ${USER_1}
         initialAdminPassword: ${NEXTCLOUD_PASSWORD}
       general:
         accessIP: ${TRAEFIK_IP}
@@ -82,7 +82,7 @@ spec:
         enabled: true
       collabora:
         enabled: true
-        username: ${USER_10}
+        username: ${USER_1}
         password: ${COLLABORA_PASSWORD}
         dictionaries:
           - en_US
@@ -93,8 +93,6 @@ spec:
         volsync:
           - name: cfg
             type: restic
-            cleanupTempPVC: true
-            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true
@@ -106,8 +104,6 @@ spec:
         volsync:
           - name: htm
             type: restic
-            cleanupTempPVC: true
-            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true
