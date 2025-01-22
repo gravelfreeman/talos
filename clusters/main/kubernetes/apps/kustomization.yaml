@@ -10,7 +10,7 @@ resources:
   - gostream/ks.yaml
   - homebox/ks.yaml
   - homepage/ks.yaml
-  - immich/ks.yaml
+  # - immich/ks.yaml
   - maloja/ks.yaml
   - mealie/ks.yaml
   - multi-scrobbler/ks.yaml
