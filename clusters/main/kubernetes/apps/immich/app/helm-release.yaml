@@ -15,7 +15,7 @@ spec:
         kind: HelmRepository
         name: truecharts
         namespace: flux-system
-  timeout: 240m
+  timeout: 20m
   maxHistory: 3
   driftDetection:
     mode: warn
@@ -71,17 +71,17 @@ spec:
           - host: photos.${DOMAIN_0}
     
     persistence:
-      backups:
-        volsync:
-          - name: bkp
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-              trigger:
-                schedule: 0 3 * * *
+      # backups:
+      #   volsync:
+      #     - name: bkp
+      #       type: restic
+      #       credentials: backblaze
+      #       dest:
+      #         enabled: true
+      #       src:
+      #         enabled: true
+      #         trigger:
+      #           schedule: 0 3 * * *
       library:
         volsync:
           - name: lib
