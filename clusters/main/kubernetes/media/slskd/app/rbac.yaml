@@ -1,0 +1,60 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: slskd-portfwd-role
+  namespace: slskd
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create", "get"]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: slskd-portfwd-sa
+  namespace: slskd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: slskd-portfwd-rb
+  namespace: slskd
+subjects:
+  - kind: ServiceAccount
+    name: slskd-portfwd-sa
+    namespace: slskd
+roleRef:
+  kind: Role
+  name: slskd-portfwd-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: update-portforward
+  namespace: slskd
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: slskd-portfwd-sa
+          restartPolicy: OnFailure
+          containers:
+            - name: update-portforward
+              image: ghcr.io/tieum/slskd-port-forward-gluetun-server:main
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: NAMESPACE
+                  value: "slskd"
+                - name: LABEL_SELECTOR
+                  value: "app.kubernetes.io/name=slskd"
+                - name: POD_CONTAINER
+                  value: "slskd-vpn"

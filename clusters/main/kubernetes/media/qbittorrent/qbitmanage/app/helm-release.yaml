@@ -29,7 +29,7 @@ spec:
   values:
     TZ: America/Montreal
     global:
-      stopAll: true
+      stopAll: false
 
     image:
       repository: docker.io/bobokun/qbit_manage

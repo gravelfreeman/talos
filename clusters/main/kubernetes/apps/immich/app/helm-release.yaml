@@ -10,12 +10,12 @@ spec:
   chart:
     spec:
       chart: immich
-      version: 17.26.0
+      version: 17.38.1
       sourceRef:
         kind: HelmRepository
         name: truecharts
         namespace: flux-system
-  timeout: 60m
+  timeout: 20m
   maxHistory: 3
   driftDetection:
     mode: warn
@@ -30,6 +30,7 @@ spec:
   uninstall:
     keepHistory: false
   values:
+    TZ: America/Montreal
     global:
       stopAll: false
     
@@ -45,17 +46,14 @@ spec:
     cnpg:
       main:
         mode: recovery
-        database: immich
-        user: immich
         password: ${CNPG_PASSWORD_IMMICH}
-        pgVersion: 16
+        cluster:
+          singleNode: true
         backups:
           enabled: true
           revision: "2"
           credentials: backblaze
         recovery:
-          revision: "1"
-          method: object_store
           credentials: backblaze
   
     ingress:
@@ -72,6 +70,15 @@ spec:
           - host: photos.${DOMAIN_0}
     
     persistence:
+      backups:
+        volsync:
+          - name: bkp
+            type: restic
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
       library:
         volsync:
           - name: lib
@@ -117,15 +124,15 @@ spec:
               enabled: true
             src:
               enabled: true
-      user10:
+      user1:
         enabled: true
         type: nfs
-        mountPath: /usr/src/app/upload/library/${USER_10}
+        mountPath: /usr/src/app/upload/library/${USER_1}
         server: ${NFS_SERVER_0}
-        path: ${DATASET_USERS}/${USER_10}/Photos
-      user11:
+        path: ${DATASET_USERS}/${USER_1}/Photos
+      user2:
         enabled: true
         type: nfs
-        mountPath: /usr/src/app/upload/library/${USER_11}
+        mountPath: /usr/src/app/upload/library/${USER_2}
         server: ${NFS_SERVER_0}
-        path: ${DATASET_USERS}/${USER_11}/Photos
+        path: ${DATASET_USERS}/${USER_2}/Photos
