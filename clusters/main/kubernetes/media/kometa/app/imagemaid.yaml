@@ -35,7 +35,7 @@ spec:
 
     image:
       repository: kometateam/imagemaid
-      tag: v1.1.1@sha256:48477f33f1aa4415be9ab6d6a883c0c215d7ac58767f5d4da64f412a7d940468
+      tag: v1.1.1@sha256:fbec331b36c1473f8a9c4214f55e5b097860476c8a5274eb61a2b85df89e56cc
       pullPolicy: IfNotPresent
 
     credentials:
