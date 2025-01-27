@@ -1,0 +1,102 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: imagemaid
+  namespace: imagemaid
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 14.5.2
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+      interval: 15m
+  timeout: 20m
+  maxHistory: 3
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    TZ: America/Montreal
+    global:
+      stopAll: false
+
+    image:
+      repository: kometateam/imagemaid
+      tag: v1.1.1@sha256:fbec331b36c1473f8a9c4214f55e5b097860476c8a5274eb61a2b85df89e56cc
+      pullPolicy: IfNotPresent
+
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+
+    service:
+      main:
+        ports:
+          main:
+            port: 3000
+
+    persistence:
+      config:
+        enabled: true
+        type: pvc
+        mountPath: /config
+        targetSelectAll: true
+        volsync:
+          - name: cfg
+            type: restic
+            cleanupCachePVC: true
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 3 * * *
+      plex:
+        enabled: true
+        type: nfs
+        mountPath: /plex
+        server: ${NFS_SERVER_0}
+        path: /mnt/eden/backups/plex/Library/Application Support
+
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                PLEX_PATH: /plex/Plex Media Server
+                LOCAL_DB: False
+                MODE: remove
+                SCHEDULE: ""
+                PLEX_URL: http://plex.plex.svc.cluster.local:32400
+                PLEX_TOKEN: ${PLEX_TOKEN}
+                DISCORD: ${DISCORD_WEBHOOK_0}
+                TIMEOUT: 600
+                SLEEP: 60
+                IGNORE_RUNNING: False
+                USE_EXISTING: False
+                PHOTO_TRANSCODER: True
+                EMPTY_TRASH: True
+                CLEAN_BUNDLES: True
+                OPTIMIZE_DB: True
+                TRACE: False
+                LOG_REQUESTS: True
