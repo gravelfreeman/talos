@@ -66,23 +66,10 @@ spec:
 
     persistence:
       config:
-        volsync:
-          - name: cfg
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-              trigger:
-                schedule: 0 3 * * *
-      temp:
         enabled: true
-        size: 320Gi
-        type: pvc
-        mountPath: /temp
-        targetSelectAll: true
+        type: nfs
+        server: ${NFS_SERVER_0}
+        path: /mnt/eden/backups/plex
       media:
         enabled: true
         type: nfs
