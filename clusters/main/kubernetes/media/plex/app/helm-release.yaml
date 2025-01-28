@@ -66,10 +66,18 @@ spec:
 
     persistence:
       config:
-        enabled: true
-        type: nfs
-        server: ${NFS_SERVER_0}
-        path: /mnt/eden/backups/plex
+        size: 256Gi
+        volsync:
+          - name: cfg
+            type: restic
+            cleanupCachePVC: true
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 3 * * *
       media:
         enabled: true
         type: nfs

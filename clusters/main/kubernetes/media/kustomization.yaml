@@ -5,7 +5,7 @@ resources:
   - audiobookshelf/ks.yaml
   - autobrr/ks.yaml
   - bazarr/ks.yaml
-  - imagemaid/ks.yaml
+  # - imagemaid/ks.yaml
   - jdownloader/ks.yaml
   # - kavita/ks.yaml
   # - kometa/ks.yaml
