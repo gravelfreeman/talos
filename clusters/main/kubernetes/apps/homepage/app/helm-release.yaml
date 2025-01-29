@@ -43,11 +43,6 @@ spec:
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
 
-    service:
-      main:
-        type: LoadBalancer
-        loadBalancerIP: ${LOAD_BALANCER_HPE}
-
     ingress:
       main:
         enabled: true
@@ -98,9 +93,6 @@ spec:
         service:
             type: LoadBalancer
             loadBalancerIP: ${LOAD_BALANCER_CSV}
-            ports:
-                codeserver:
-                  port: 3000
         # ingress:
         #   enabled: true
         #   integrations:
