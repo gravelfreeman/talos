@@ -4,7 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: imagemaid
-  namespace: imagemaid
+  namespace: plex
 spec:
   interval: 15m
   chart:
@@ -70,12 +70,6 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 3 * * *
-      plex:
-        enabled: true
-        type: nfs
-        mountPath: /plex
-        server: ${NFS_SERVER_0}
-        path: /mnt/eden/backups/plex/Library/Application Support
 
     workload:
       main:
@@ -83,14 +77,15 @@ spec:
           containers:
             main:
               env:
+                TZ: America/Montreal
                 PLEX_PATH: /plex/Plex Media Server
                 LOCAL_DB: False
                 MODE: remove
-                SCHEDULE: 05:10|daily
+                SCHEDULE: "" # 05:00|daily
                 PLEX_URL: http://plex.plex.svc.cluster.local:32400
                 PLEX_TOKEN: ${PLEX_TOKEN}
                 DISCORD: ${DISCORD_WEBHOOK_0}
-                TIMEOUT: 600
+                TIMEOUT: 86400
                 SLEEP: 60
                 IGNORE_RUNNING: False
                 USE_EXISTING: False
@@ -98,5 +93,5 @@ spec:
                 EMPTY_TRASH: True
                 CLEAN_BUNDLES: True
                 OPTIMIZE_DB: True
-                TRACE: True
-                LOG_REQUESTS: True
+                TRACE: False
+                LOG_REQUESTS: /spec/template/spec/containers/2/resources/limits/truecharts.org

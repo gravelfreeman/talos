@@ -1,0 +1,21 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: restart-plex
+  namespace: plex
+spec:
+  schedule: "50 4 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: plex-restart
+          restartPolicy: Never
+          containers:
+            - name: restart-plex
+              image: bitnami/kubectl:latest
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "kubectl rollout restart deployment plex -n plex"
