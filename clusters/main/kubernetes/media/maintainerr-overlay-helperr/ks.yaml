@@ -1,11 +1,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: imagemaid
+  name: maintainerr-overlay-helperr
   namespace: flux-system
 spec:
   interval: 10m
-  path: clusters/main/kubernetes/media/imagemaid/app
+  path: clusters/main/kubernetes/media/maintainerr-overlay-helperr/app
   prune: true
   sourceRef:
     kind: GitRepository

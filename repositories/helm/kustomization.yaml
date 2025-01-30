@@ -4,12 +4,14 @@ metadata:
   name: helm-repos
   namespace: flux-system
 resources:
+  - authelia.yaml
   - bjw-s.yaml
   - cilium.yaml
   - cloudnative-pg.yaml
   - coredns.yaml
   - csi-driver-nfs.yaml
   - descheduler.yaml
+  - external-dns.yaml
   - intel.yaml
   - jetstack.yaml
   - kubernetes-sigs-metrics-server.yaml
@@ -19,6 +21,7 @@ resources:
   - metallb.yaml
   - metrics-server.yaml
   - node-feature-discovery.yaml
+  - nvdp.yaml
   - nvidia.yaml
   - openebs.yaml
   - piraeus.yaml
@@ -28,5 +31,3 @@ resources:
   - stakater.yaml
   - topolvm.yaml
   - truecharts.yaml
-  - external-dns.yaml
-  - authelia.yaml
