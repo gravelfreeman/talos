@@ -5,16 +5,17 @@ resources:
   - audiobookshelf/ks.yaml
   - autobrr/ks.yaml
   - bazarr/ks.yaml
-  # - imagemaid/ks.yaml
   - jdownloader/ks.yaml
   # - kavita/ks.yaml
-  # - kometa/ks.yaml
+  - kometa/ks.yaml
   - lidarr/ks.yaml
   - maintainerr/ks.yaml
+  # - maintainerr-overlay-helperr/ks.yaml
   - makemkv/ks.yaml
   - metube/ks.yaml
   - overseerr/ks.yaml
   - plex/ks.yaml
+  - plex-auto-languages/ks.yaml
   - prowlarr/ks.yaml
   - qbittorrent
   - radarr/ks.yaml
