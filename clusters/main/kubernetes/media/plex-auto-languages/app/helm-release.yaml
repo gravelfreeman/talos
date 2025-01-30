@@ -3,14 +3,14 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: kometa
-  namespace: kometa
+  name: plex-auto-languages
+  namespace: plex
 spec:
   interval: 15m
   chart:
     spec:
-      chart: kometa
-      version: 3.6.1
+      chart: plex-auto-languages
+      version: 10.5.1
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -42,18 +42,8 @@ spec:
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
 
-    kometa:
-      run: false
-      no_countdown: false
-      time: "2:00"
-
     persistence:
       config:
-        targetSelectAll: false
-        targetSelector:
-          main:
-            main:
-              mountPath: /config
         volsync:
           - name: cfg
             type: restic
@@ -66,20 +56,11 @@ spec:
               trigger:
                 schedule: 0 3 * * *
 
-    addons:
-      codeserver:
-        enabled: true
-        ingress:
-          enabled: true
-          integrations:
-            traefik:
-              enabled: true
-              middlewares:
-                - name: auth
-                  namespace: traefik
-          tls:
-            - hosts:
-              - kometa.cs.${DOMAIN_0}
-              clusterIssuer: domain-0-wildcard
-          hosts:
-            - host: kometa.cs.${DOMAIN_0}
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                PLEX_TOKEN: ${PLEX_TOKEN}
+                PLEX_URL: http://plex.plex.svc.cluster.local:32400
