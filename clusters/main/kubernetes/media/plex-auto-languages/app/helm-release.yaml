@@ -1,22 +1,23 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: archivebox
-  namespace: archivebox
+  name: plex-auto-languages
+  namespace: plex
 spec:
   interval: 15m
   chart:
     spec:
-      chart: archivebox
-      version: 4.5.1
+      chart: plex-auto-languages
+      version: 10.5.1
       sourceRef:
         kind: HelmRepository
         name: truecharts
         namespace: flux-system
+      interval: 15m
   timeout: 20m
   maxHistory: 3
-  driftDetection:
-    mode: warn
   install:
     createNamespace: true
     remediation:
@@ -41,26 +42,10 @@ spec:
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
 
-    ingress:
-      main:
-        enabled: true
-        integrations:
-          traefik:
-            enabled: true
-            middlewares:
-              - name: auth
-                namespace: traefik
-        tls:
-          - hosts:
-            - archivebox.${DOMAIN_0}
-            clusterIssuer: domain-0-wildcard
-        hosts:
-          - host: archivebox.${DOMAIN_0}
-
     persistence:
-      data:
+      config:
         volsync:
-          - name: dat
+          - name: cfg
             type: restic
             cleanupCachePVC: true
             credentials: backblaze
@@ -70,13 +55,12 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 5 * * *
-      config:
-        enabled: true
-        type: nfs
-        mountPath: /config
-        server: ${NFS_SERVER_0}
-        path: "${DATASET_APPS}/kubernetes/archivebox"
 
-    config:
-      admin_username: ${ADMIN_USERNAME}
-      admin_password: ${ADMIN_PASSWORD}
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                PLEX_TOKEN: ${PLEX_TOKEN}
+                PLEX_URL: http://plex.plex.svc.cluster.local:32400

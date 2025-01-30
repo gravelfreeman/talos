@@ -103,7 +103,7 @@ spec:
             src:
               enabled: true
               trigger:
-                schedule: 0 3 * * *
+                schedule: 0 5 * * *
       share:
         type: nfs
         server: ${NFS_SERVER_0}

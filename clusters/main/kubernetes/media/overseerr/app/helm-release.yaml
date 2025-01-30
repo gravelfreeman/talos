@@ -67,7 +67,7 @@ spec:
             src:
               enabled: true
               trigger:
-                schedule: 0 3 * * *
+                schedule: 0 5 * * *
       public:
         enabled: true
         mountPath: /app/public
@@ -81,4 +81,4 @@ spec:
             src:
               enabled: true
               trigger:
-                schedule: 0 3 * * *
+                schedule: 0 5 * * *
