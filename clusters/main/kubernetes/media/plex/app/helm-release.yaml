@@ -33,7 +33,12 @@ spec:
     TZ: America/Montreal
     global:
       stopAll: false
-    
+
+    imagemaidImage:
+      repository: kometateam/imagemaid
+      tag: v1.1.1@sha256:fbec331b36c1473f8a9c4214f55e5b097860476c8a5274eb61a2b85df89e56cc
+      pullPolicy: IfNotPresent
+
     credentials:
       backblaze:
         type: s3
@@ -47,6 +52,15 @@ spec:
       main:
         type: LoadBalancer
         loadBalancerIP: ${LOAD_BALANCER_PLX}
+      imagemaid:
+        enabled: true
+        type: ClusterIP
+        ports:
+          imagemaid:
+            enabled: true
+            targetSelector: imagemaid
+            protocol: http
+            port: 3000
 
     ingress:
       main:
@@ -67,6 +81,7 @@ spec:
     persistence:
       config:
         size: 256Gi
+        targetSelectAll: true
         volsync:
           - name: cfg
             type: restic
@@ -94,11 +109,51 @@ spec:
     plex:
       serverIP: ${LOAD_BALANCER_PLX}
 
+    resources:
+        limits:
+            nvidia.com/gpu: 1
+
     workload:
       main:
         podSpec:
+          runtimeClassName: nvidia
           containers:
             main:
               env:
                 ALLOWED_NETWORKS: ${ALLOWED_NETWORKS}
                 PLEX_CLAIM: ${PLEX_CLAIM}
+            imagemaid:
+              enabled: true
+              primary: false
+              imageSelector: imagemaidImage
+              env:
+                PLEX_PATH: /config/Library/Application Support/Plex Media Server
+                LOCAL_DB: False
+                MODE: remove
+                SCHEDULE: "" # 05:00|daily
+                PLEX_URL: http://plex.plex.svc.cluster.local:32400
+                PLEX_TOKEN: ${PLEX_TOKEN}
+                DISCORD: ${DISCORD_WEBHOOK_0}
+                TIMEOUT: 86400
+                SLEEP: 60
+                IGNORE_RUNNING: False
+                USE_EXISTING: False
+                PHOTO_TRANSCODER: True
+                EMPTY_TRASH: True
+                CLEAN_BUNDLES: True
+                OPTIMIZE_DB: True
+                TRACE: False
+                LOG_REQUESTS: True
+              probes:
+                liveness:
+                  enabled: true
+                  type: "{{ .Values.service.main.ports.imagemaid.protocol }}"
+                  port: "{{ $.Values.service.main.ports.imagemaid.targetPort | default .Values.service.main.ports.imagemaid.port }}"
+                readiness:
+                  enabled: true
+                  type: "{{ .Values.service.main.ports.imagemaid.protocol }}"
+                  port: "{{ $.Values.service.main.ports.imagemaid.targetPort | default .Values.service.main.ports.imagemaid.port }}"
+                startup:
+                  enabled: true
+                  type: "{{ .Values.service.main.ports.imagemaid.protocol }}"
+                  port: "{{ $.Values.service.main.ports.imagemaid.targetPort | default .Values.service.main.ports.imagemaid.port }}"

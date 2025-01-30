@@ -10,7 +10,6 @@ resources:
   - kyverno-policies/ks.yaml
   - lldap/ks.yaml
   - metallb-config/ks.yaml
-  - nvidia-device-plugin/ks.yaml
   - pgadmin/ks.yaml
   - system-upgrade-controller-plans/ks.yaml
   - traefik/ks.yaml
