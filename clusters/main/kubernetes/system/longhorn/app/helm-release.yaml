@@ -25,55 +25,35 @@ spec:
       retries: 3
   values:
     defaultSettings:
-      # Increase to 3 for a multi-node cluster
-      defaultReplicaCount: 1
-      # Overprovisioning might be needed when using volsync
-      storageOverProvisioningPercentage: 100000
-      # v2DataEngine: true
+        defaultReplicaCount: 1
+        # Overprovisioning might be needed when using volsync
+        storageOverProvisioningPercentage: 100000
+        # v2DataEngine: true
     persistence:
-      # Set to false to pick another CSI as default
-      defaultClass: true
-      # Increase to 3 for a multi-node cluster
-      defaultClassReplicaCount: 1
----
-apiVersion: longhorn.io/v1beta2
-kind: RecurringJob
-metadata:
-  name: snapshot-delete
-  namespace: longhorn-system
-spec:
-  concurrency: 1
-  cron: 0 4 * * *
-  groups:
-  - default
-  name: trim
-  retain: 0
-  task: snapshot-delete
----
-apiVersion: longhorn.io/v1beta2
-kind: RecurringJob
-metadata:
-  name: snapshot-cleanup
-  namespace: longhorn-system
-spec:
-  concurrency: 1
-  cron: 20 4 * * *
-  groups:
-  - default
-  name: trim
-  retain: 0
-  task: snapshot-cleanup
----
-apiVersion: longhorn.io/v1beta2
-kind: RecurringJob
-metadata:
-  name: filesystem-trim
-  namespace: longhorn-system
-spec:
-  concurrency: 1
-  cron: 40 4 * * *
-  groups:
-  - default
-  name: trim
-  retain: 0
-  task: filesystem-trim
+        # Set to false to pick another CSI as default
+        defaultClass: true
+        defaultClassReplicaCount: 1
+    csi:
+        attacherReplicaCount: 1
+        provisionerReplicaCount: 1
+        resizerReplicaCount: 1
+        snapshotterReplicaCount: 1
+
+    # Enable the Longhorn UI
+    longhornUI:
+      replicas: 1
+    service:
+      ui:
+        type: LoadBalancer
+    ingress:
+      enabled: true
+      host: longhorn.${DOMAIN_0}
+      pathType: Prefix
+      tls: true
+      tlsSecret: "longhorn-tls-0"
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.middlewares: "traefik-chain-basic@kubernetescrd,traefik-auth@kubernetescrd"
+        traefik.ingress.kubernetes.io/router.tls: "true"
+        cert-manager.io/cluster-issuer: domain-0-wildcard
+        cert-manager.io/private-key-rotation-policy: Always
