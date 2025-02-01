@@ -107,16 +107,28 @@ spec:
     workload:
       main:
         podSpec:
-          runtimeClassName: nvidia
           containers:
             main:
+              resources:
+                limits:
+                  nvidia.com/gpu: 1
               env:
                 ALLOWED_NETWORKS: ${ALLOWED_NETWORKS}
                 PLEX_CLAIM: ${PLEX_CLAIM}
-            imagemaid:
+          runtimeClassName: nvidia
+      imagemaid:
+        enabled: true
+        primary: false
+        type: Deployment
+        podSpec:
+          containers:
+            main:
               enabled: true
-              primary: false
+              primary: true
               imageSelector: imagemaidImage
+              resources:
+                limits:
+                  nvidia.com/gpu: 0
               env:
                 PLEX_PATH: /config/Library/Application Support/Plex Media Server
                 LOCAL_DB: False
