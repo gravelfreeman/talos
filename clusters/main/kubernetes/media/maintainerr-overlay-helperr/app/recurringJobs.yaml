@@ -1,0 +1,42 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: stop-maintainerr
+  namespace: maintainerr
+spec:
+  schedule: "0 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: maintainerr-cron
+          restartPolicy: Never
+          containers:
+            - name: stop-maintainerr
+              image: bitnami/kubectl:latest
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "kubectl scale deployment --replicas 0 maintainerr-overlay-helperr -n maintainerr"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: start-maintainerr
+  namespace: maintainerr
+spec:
+  schedule: "0 6 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: maintainerr-cron
+          restartPolicy: Never
+          containers:
+            - name: start-maintainerr
+              image: bitnami/kubectl:latest
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "kubectl scale deployment --replicas 1 maintainerr-overlay-helperr -n maintainerr"

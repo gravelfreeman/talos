@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 3.6.1
+      version: 14.5.2
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -31,7 +31,7 @@ spec:
   values:
     TZ: America/Montreal
     global:
-      stopAll: true
+      stopAll: false
 
     image:
       repository: gsariev/maintainerr-overlay-helperr
@@ -46,6 +46,12 @@ spec:
         accessKey: ${BUCKET_ACCESSKEY}
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
+
+    service:
+      main:
+        ports:
+          main:
+            port: 3000
 
     persistence:
       config:
@@ -69,15 +75,13 @@ spec:
         podSpec:
           containers:
             main:
-              enabled: true
-              primary: false
               securityContext:
                 runAsNonRoot: false
                 readOnlyRootFilesystem: false
                 runAsUser: 0
                 runAsGroup: 0
               env:
-                PLEX_URL: http://${LOAD_BALANCER_PLX}:32400
+                PLEX_URL: http://plex.plex.svc.cluster.local:32400
                 PLEX_TOKEN: ${PLEX_TOKEN}
                 MAINTAINERR_URL: http://maintainerr.maintainerr.svc.cluster.local:6246/api/collections
                 IMAGE_SAVE_PATH: /config/images
@@ -93,14 +97,7 @@ spec:
                 HORIZONTAL_ALIGN: left
                 VERTICAL_OFFSET: 50
                 VERTICAL_ALIGN: bottom
-                RUN_INTERVAL: 480
-              probes:
-                liveness:
-                  enabled: false
-                readiness:
-                  enabled: false
-                startup:
-                  enabled: false
+                RUN_INTERVAL: 60
 
     addons:
       codeserver:

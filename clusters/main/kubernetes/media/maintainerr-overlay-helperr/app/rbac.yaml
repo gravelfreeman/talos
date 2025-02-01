@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: maintainerr-cron
+  namespace: maintainerr
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: scale-maintainerr
+  namespace: maintainerr
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    resourceNames: ["maintainerr-overlay-helperr"]
+    verbs: ["get", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: scale-maintainerr-binding
+  namespace: maintainerr
+subjects:
+  - kind: ServiceAccount
+    name: maintainerr-cron
+    namespace: maintainerr
+roleRef:
+  kind: Role
+  name: scale-maintainerr
+  apiGroup: rbac.authorization.k8s.io
