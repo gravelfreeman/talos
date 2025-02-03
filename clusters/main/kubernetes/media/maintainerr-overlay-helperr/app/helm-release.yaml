@@ -97,7 +97,7 @@ spec:
                 HORIZONTAL_ALIGN: left
                 VERTICAL_OFFSET: 50
                 VERTICAL_ALIGN: bottom
-                RUN_INTERVAL: 60
+                RUN_INTERVAL: 2880
 
     addons:
       codeserver:
