@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: maintainerr-cron
+  name: maintainerr-restart
   namespace: maintainerr
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: scale-maintainerr
+  name: restart-maintainerr-overlay-helperr
   namespace: maintainerr
 rules:
   - apiGroups: ["apps"]
@@ -19,13 +19,13 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: scale-maintainerr-binding
+  name: restart-maintainerr-overlay-helperr-binding
   namespace: maintainerr
 subjects:
   - kind: ServiceAccount
-    name: maintainerr-cron
+    name: maintainerr-restart
     namespace: maintainerr
 roleRef:
   kind: Role
-  name: scale-maintainerr
+  name: restart-maintainerr-overlay-helperr
   apiGroup: rbac.authorization.k8s.io
