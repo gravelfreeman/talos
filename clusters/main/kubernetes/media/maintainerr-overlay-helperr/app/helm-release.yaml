@@ -58,6 +58,7 @@ spec:
         enabled: true
         type: pvc
         mountPath: /config
+        targetSelectAll: true
         volsync:
           - name: cfg
             type: restic
@@ -97,7 +98,7 @@ spec:
                 HORIZONTAL_ALIGN: left
                 VERTICAL_OFFSET: 50
                 VERTICAL_ALIGN: bottom
-                RUN_INTERVAL: 60
+                RUN_INTERVAL: 2880
 
     addons:
       codeserver:
