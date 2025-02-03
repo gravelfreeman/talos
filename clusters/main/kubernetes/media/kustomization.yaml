@@ -9,8 +9,8 @@ resources:
   # - kavita/ks.yaml
   - kometa/ks.yaml
   - lidarr/ks.yaml
-  # - maintainerr/ks.yaml
-  # - maintainerr-overlay-helperr/ks.yaml
+  - maintainerr/ks.yaml
+  - maintainerr-overlay-helperr/ks.yaml
   - makemkv/ks.yaml
   - metube/ks.yaml
   - overseerr/ks.yaml
