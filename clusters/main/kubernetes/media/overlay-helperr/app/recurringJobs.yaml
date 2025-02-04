@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: restart-maintainerr-overlay-helperr
+  name: restart-overlay-helperr
   namespace: maintainerr
 spec:
   schedule: "30 3 * * *"
@@ -13,9 +13,9 @@ spec:
           serviceAccountName: maintainerr-restart
           restartPolicy: Never
           containers:
-            - name: restart-maintainerr-overlay-helperr
+            - name: restart-overlay-helperr
               image: bitnami/kubectl:latest
               command:
                 - "/bin/sh"
                 - "-c"
-                - "kubectl rollout restart deployment maintainerr-overlay-helperr -n maintainerr"
+                - "kubectl rollout restart deployment overlay-helperr -n maintainerr"

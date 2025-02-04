@@ -1,11 +1,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: maintainerr-overlay-helperr
+  name: overlay-helperr
   namespace: flux-system
 spec:
   interval: 10m
-  path: clusters/main/kubernetes/media/maintainerr-overlay-helperr/app
+  path: clusters/main/kubernetes/media/overlay-helperr/app
   prune: true
   sourceRef:
     kind: GitRepository

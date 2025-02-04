@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: maintainerr-overlay-helperr
+  name: overlay-helperr
   namespace: maintainerr
 spec:
   interval: 15m
@@ -62,7 +62,7 @@ spec:
         volsync:
           - name: cfg
             type: restic
-            # cleanupCachePVC: true
+            cleanupCachePVC: true
             credentials: backblaze
             dest:
               enabled: true
@@ -99,6 +99,13 @@ spec:
                 VERTICAL_OFFSET: 50
                 VERTICAL_ALIGN: bottom
                 RUN_INTERVAL: 2880
+              probes:
+                liveness:
+                  enabled: false
+                readiness:
+                  enabled: false
+                startup:
+                  enabled: false
 
     addons:
       codeserver:

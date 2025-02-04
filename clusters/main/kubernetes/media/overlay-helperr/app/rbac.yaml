@@ -8,18 +8,18 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: restart-maintainerr-overlay-helperr
+  name: restart-overlay-helperr
   namespace: maintainerr
 rules:
   - apiGroups: ["apps"]
     resources: ["deployments"]
-    resourceNames: ["maintainerr-overlay-helperr"]
+    resourceNames: ["overlay-helperr"]
     verbs: ["get", "patch", "update"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: restart-maintainerr-overlay-helperr-binding
+  name: restart-overlay-helperr-binding
   namespace: maintainerr
 subjects:
   - kind: ServiceAccount
@@ -27,5 +27,5 @@ subjects:
     namespace: maintainerr
 roleRef:
   kind: Role
-  name: restart-maintainerr-overlay-helperr
+  name: restart-overlay-helperr
   apiGroup: rbac.authorization.k8s.io
