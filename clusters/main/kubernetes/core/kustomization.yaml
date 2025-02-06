@@ -5,7 +5,7 @@ resources:
   - blocky/ks.yaml
   - clusterissuer/ks.yaml
   - external-dns-unifi/ks.yaml
-  - flaresolverr/ks.yaml
+  - flare-bypasser/ks.yaml
   - gluetun/ks.yaml
   - kyverno-policies/ks.yaml
   - lldap/ks.yaml
@@ -13,4 +13,3 @@ resources:
   - pgadmin/ks.yaml
   - system-upgrade-controller-plans/ks.yaml
   - traefik/ks.yaml
-  
