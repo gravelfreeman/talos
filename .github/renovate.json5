@@ -7,7 +7,7 @@
   "minor": {
     "packageRules": [
       {
-        "matchPackageNames": ["ghcr.io/siderolabs/kubelet", "ghcr.io/siderolabs/installer"],
+        "matchPackageNames": ["ghcr.io/siderolabs/kubelet", "ghcr.io/siderolabs/installer", "ghcr.io/onedr0p/qbittorrent"],
         "dependencyDashboardApproval": true
       }
     ]

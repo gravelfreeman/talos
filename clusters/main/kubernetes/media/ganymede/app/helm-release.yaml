@@ -1,0 +1,157 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ganymede
+  namespace: ganymede
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 14.5.2
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+  timeout: 20m
+  maxHistory: 3
+  driftDetection:
+    mode: warn
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    TZ: America/Montreal
+    global:
+      stopAll: false
+
+    image:
+      repository: ghcr.io/zibbp/ganymede
+      pullPolicy: IfNotPresent
+      tag: 4.0.3@sha256:3f7a93e4875b665cd6473cea99f35fc790facd1f6cfed7c3e6c34c65a405727f
+
+    securityContext:
+      container:
+        readOnlyRootFilesystem: false
+        runAsNonRoot: false
+        runAsUser: 0
+        runAsGroup: 0
+
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+
+    cnpg:
+      main:
+        enabled: true
+        cluster:
+          singleNode: true
+        # mode: recovery
+        database: ganymede
+        user: ganymede
+        password: ${CNPG_PASSWORD_GANYMEDE}
+        backups:
+          enabled: true
+          revision: "1"
+          credentials: backblaze
+        # recovery:
+        #   credentials: backblaze
+
+    service:
+      main:
+        ports:
+          main:
+            port: 4000
+
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+            middlewares:
+              - name: auth
+                namespace: traefik
+        tls:
+          - hosts:
+            - ganymede.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: ganymede.${DOMAIN_0}
+
+    persistence:
+      config:
+        enabled: true
+        type: pvc
+        mountPath: /data/config
+        targetSelectAll: true
+        volsync:
+          - name: cfg
+            type: restic
+            cleanupCachePVC: true
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 5 * * *
+      videos:
+        enabled: true
+        type: nfs
+        mountPath: /data/videos
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_BACKUPS}/twitch
+      temp:
+        enabled: true
+        type: emptyDir
+        mountPath: /data/temp
+      logs:
+        enabled: true
+        type: emptyDir
+        mountPath: /data/logs
+
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                DEBUG: false
+                VIDEOS_DIR: /data/videos
+                TEMP_DIR: /data/temp
+                LOGS_DIR: /data/logs
+                CONFIG_DIR: /data/config
+                DB_HOST: postgresql://ganymede-app-template-cnpg-main-rw
+                DB_PORT: 5432
+                DB_USER: ganymede
+                DB_PASS: ${CNPG_PASSWORD_GANYMEDE}
+                DB_NAME: ganymede
+                DB_SSL: disable
+                TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID}
+                TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET}
+                MAX_CHAT_DOWNLOAD_EXECUTIONS: 3
+                MAX_CHAT_RENDER_EXECUTIONS: 2
+                MAX_VIDEO_DOWNLOAD_EXECUTIONS: 2
+                MAX_VIDEO_CONVERT_EXECUTIONS: 3
+                MAX_VIDEO_SPRITE_THUMBNAIL_EXECUTIONS: 2
+                # OAUTH_ENABLED: false
+                # OAUTH_PROVIDER_URL: 
+                # OAUTH_CLIENT_ID: 
+                # OAUTH_CLIENT_SECRET: 
+                # OAUTH_REDIRECT_URL: http://IP:PORT/api/v1/auth/oauth/callback # Points to the API service
+                SHOW_SSO_LOGIN_BUTTON: true
+                FORCE_SSO_AUTH: false
+                REQUIRE_LOGIN: false
