@@ -51,10 +51,11 @@ spec:
           singleNode: true
         backups:
           enabled: true
-          revision: "1"
+          revision: "2"
           credentials: backblaze
         recovery:
           credentials: backblaze
+          revision: "1"
 
     workload:
       main:
