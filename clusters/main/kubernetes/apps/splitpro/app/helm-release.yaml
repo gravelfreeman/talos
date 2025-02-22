@@ -64,10 +64,11 @@ spec:
         password: ${CNPG_PASSWORD_SPLITPRO}
         backups:
           enabled: true
-          revision: "1"
+          revision: "2"
           credentials: backblaze
         recovery:
           credentials: backblaze
+          revision: "1"
 
     service:
       main:
