@@ -21,7 +21,7 @@ resources:
   - metallb.yaml
   - metrics-server.yaml
   - node-feature-discovery.yaml
-  - nvdp.yaml
+  # - nvdp.yaml
   - nvidia.yaml
   - openebs.yaml
   - piraeus.yaml
