@@ -58,16 +58,17 @@ spec:
         enabled: true
         cluster:
           singleNode: true
-        # mode: recovery
+        mode: recovery
         database: ganymede
         user: ganymede
         password: ${CNPG_PASSWORD_GANYMEDE}
         backups:
           enabled: true
-          revision: "1"
+          revision: "2"
           credentials: backblaze
-        # recovery:
-        #   credentials: backblaze
+        recovery:
+          credentials: backblaze
+          revision: "1"
 
     service:
       main:

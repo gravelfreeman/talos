@@ -109,13 +109,13 @@ spec:
         podSpec:
           containers:
             main:
-              resources:
-                limits:
-                  nvidia.com/gpu: 1
+              # resources:
+              #   limits:
+              #     nvidia.com/gpu: 1
               env:
                 ALLOWED_NETWORKS: ${ALLOWED_NETWORKS}
                 PLEX_CLAIM: ${PLEX_CLAIM}
-          runtimeClassName: nvidia
+          # runtimeClassName: nvidia
         strategy: Recreate
       imagemaid:
         enabled: true
