@@ -45,15 +45,12 @@ spec:
 
     cnpg:
       main:
-        mode: recovery
+        mode: standalone
         password: ${CNPG_PASSWORD_AUTHELIA}
         cluster:
           singleNode: true
         backups:
           enabled: true
-          revision: "1"
-          credentials: backblaze
-        recovery:
           credentials: backblaze
 
     workload:
