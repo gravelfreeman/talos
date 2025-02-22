@@ -12,7 +12,7 @@ resources:
   - homepage/ks.yaml
   - immich/ks.yaml
   - maloja/ks.yaml
-  - mealie/ks.yaml
+  # - mealie/ks.yaml
   - multi-scrobbler/ks.yaml
   - nextcloud/ks.yaml
   - projectsend/ks.yaml
@@ -26,3 +26,4 @@ resources:
   - thelounge/ks.yaml
   - vikunja/ks.yaml
   - whisper-asr-webservice/ks.yaml
+  - kubernetes-dashboard/ks.yaml
