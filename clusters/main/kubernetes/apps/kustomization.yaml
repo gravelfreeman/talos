@@ -12,17 +12,18 @@ resources:
   - homepage/ks.yaml
   - immich/ks.yaml
   - maloja/ks.yaml
-  - mealie/ks.yaml
+  # - mealie/ks.yaml
   - multi-scrobbler/ks.yaml
-  - nextcloud/ks.yaml
-  - projectsend/ks.yaml
+  # - nextcloud/ks.yaml
+  # - projectsend/ks.yaml
   - rtmp-hls/ks.yaml
   - sftpgo/ks.yaml
   - shlink
-  - snapdrop/ks.yaml
+  # - snapdrop/ks.yaml
   - speedtest-tracker/ks.yaml
   - splitpro/ks.yaml
   - stirling-pdf/ks.yaml
   - thelounge/ks.yaml
-  - vikunja/ks.yaml
+  # - vikunja/ks.yaml
   - whisper-asr-webservice/ks.yaml
+  - kubernetes-dashboard/ks.yaml
