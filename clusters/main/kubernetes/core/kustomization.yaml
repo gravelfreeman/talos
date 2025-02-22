@@ -8,7 +8,7 @@ resources:
   - flare-bypasser/ks.yaml
   - gluetun/ks.yaml
   - kyverno-policies/ks.yaml
-  - lldap/ks.yaml
+  # - lldap/ks.yaml
   - metallb-config/ks.yaml
   - pgadmin/ks.yaml
   - system-upgrade-controller-plans/ks.yaml
