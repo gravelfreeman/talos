@@ -114,10 +114,6 @@ spec:
         mountPath: /data/videos
         server: ${NFS_SERVER_0}
         path: ${DATASET_BACKUPS}/twitch
-      temp:
-        enabled: true
-        type: emptyDir
-        mountPath: /data/temp
       logs:
         enabled: true
         type: emptyDir
@@ -131,7 +127,7 @@ spec:
               env:
                 DEBUG: false
                 VIDEOS_DIR: /data/videos
-                TEMP_DIR: /data/temp
+                TEMP_DIR: ${DATASET_BACKUPS}/twitch/.temp
                 LOGS_DIR: /data/logs
                 CONFIG_DIR: /data/config
                 DB_HOST: ganymede-app-template-cnpg-main-rw.ganymede.svc.cluster.local

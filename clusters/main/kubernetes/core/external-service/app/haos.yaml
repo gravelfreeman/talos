@@ -1,0 +1,56 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: haos
+  namespace: external-service
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: external-service
+      version: 15.6.2
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+      interval: 15m
+  timeout: 20m
+  maxHistory: 3
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    TZ: America/Montreal
+    global:
+      ignoreIsStopped: true
+
+    service:
+      main:
+        type: ExternalIP
+        externalIP: ${HAOS_IP}
+        ports:
+          main:
+            protocol: http
+            port: "8123"
+
+    ingress:
+      main:
+        enabled: true
+        integrations:
+          traefik:
+            enabled: true
+        tls:
+          - hosts:
+            - ha.${DOMAIN_0}
+            clusterIssuer: domain-0-wildcard
+        hosts:
+          - host: ha.${DOMAIN_0}
