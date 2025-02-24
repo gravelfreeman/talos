@@ -13,3 +13,4 @@ resources:
   - pgadmin/ks.yaml
   - system-upgrade-controller-plans/ks.yaml
   - traefik/ks.yaml
+  - external-service/ks.yaml
