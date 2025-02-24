@@ -116,7 +116,6 @@ spec:
                 ALLOWED_NETWORKS: ${ALLOWED_NETWORKS}
                 PLEX_CLAIM: ${PLEX_CLAIM}
           # runtimeClassName: nvidia
-        strategy: Recreate
       imagemaid:
         enabled: true
         primary: false
