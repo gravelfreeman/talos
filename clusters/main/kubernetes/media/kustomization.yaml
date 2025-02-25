@@ -13,7 +13,7 @@ resources:
   - maintainerr/ks.yaml
   - makemkv/ks.yaml
   - metube/ks.yaml
-  - overlay-helperr/ks.yaml
+  # - overlay-helperr/ks.yaml
   - overseerr/ks.yaml
   - plex/ks.yaml
   - plex-auto-languages/ks.yaml
