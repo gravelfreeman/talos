@@ -127,7 +127,7 @@ spec:
               env:
                 DEBUG: false
                 VIDEOS_DIR: /data/videos
-                TEMP_DIR: ${DATASET_BACKUPS}/twitch/.temp
+                TEMP_DIR: /data/videos/.temp
                 LOGS_DIR: /data/logs
                 CONFIG_DIR: /data/config
                 DB_HOST: ganymede-app-template-cnpg-main-rw.ganymede.svc.cluster.local
