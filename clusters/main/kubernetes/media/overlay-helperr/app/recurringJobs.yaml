@@ -18,4 +18,4 @@ spec:
               command:
                 - "/bin/sh"
                 - "-c"
-                - "kubectl rollout restart deployment overlay-helperr -n maintainerr"
+                - "kubectl rollout restart deployment overlay-helperr-app-template -n maintainerr"
