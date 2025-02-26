@@ -70,24 +70,6 @@ spec:
           - host: photos.${DOMAIN_0}
     
     persistence:
-      backups:
-        volsync:
-          - name: bkp
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-      library:
-        volsync:
-          - name: lib
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
       profile:
         volsync:
           - name: prf
@@ -106,33 +88,19 @@ spec:
               enabled: true
             src:
               enabled: true
+      backups:
+        type: nfs
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_BACKUPS}/immich/backups
+      library:
+        type: nfs
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_BACKUPS}/immich/library
       uploads:
-        volsync:
-          - name: upl
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
+        type: nfs
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_BACKUPS}/immich/upload
       video:
-        volsync:
-          - name: vid
-            type: restic
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-      user1:
-        enabled: true
         type: nfs
-        mountPath: /usr/src/app/upload/library/${USER_1}
         server: ${NFS_SERVER_0}
-        path: ${DATASET_USERS}/${USER_1}/Photos
-      user2:
-        enabled: true
-        type: nfs
-        mountPath: /usr/src/app/upload/library/${USER_2}
-        server: ${NFS_SERVER_0}
-        path: ${DATASET_USERS}/${USER_2}/Photos
+        path: ${DATASET_BACKUPS}/immich/encoded-video
