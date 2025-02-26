@@ -119,6 +119,11 @@ spec:
         type: emptyDir
         mountPath: /data/logs
 
+    resources:
+      limits:
+        cpu: 12000m
+        memory: 32Gi
+
     workload:
       main:
         podSpec:
