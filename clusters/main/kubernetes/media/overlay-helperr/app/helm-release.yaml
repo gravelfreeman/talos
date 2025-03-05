@@ -35,7 +35,7 @@ spec:
 
     image:
       repository: gsariev/maintainerr-overlay-helperr
-      tag: latest@sha256:2b1fab5865a8c549941af6cdbf73a0433b140d5a8c5b4e37eae65e4ee56305a5
+      tag: latest@sha256:5fe5036f11d5f26d3ccf98ec19d77ffb4347d1527c339e68398970774b39e819
       pullPolicy: IfNotPresent
 
     credentials:
