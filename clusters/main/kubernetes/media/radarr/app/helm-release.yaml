@@ -86,4 +86,4 @@ spec:
         type: nfs
         mountPath: /overseerr
         server: ${NFS_SERVER_0}
-        path: ${DATASET_OVERSEERR}/overseerr
+        path: ${DATASET_OVERSEERR}

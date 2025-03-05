@@ -154,16 +154,16 @@ spec:
         targetSelector:
           main:
             main:
-              mountPath: /media
+              mountPath: /media/temp/downloads
       overseerr:
         enabled: true
         type: nfs
         server: ${NFS_SERVER_0}
-        path: ${DATASET_OVERSEERR}/overseerr/sabnzbd
+        path: ${DATASET_OVERSEERR}/sabnzbd
         targetSelector:
           main:
             overseerr:
-              mountPath: /media
+              mountPath: /overseerr/sabnzbd
 
     workload:
       main:
