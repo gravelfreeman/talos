@@ -43,6 +43,11 @@ spec:
         secretKey: ${BUCKET_SECRETKEY}
         encrKey: ${BUCKET_ENCRKEY}
 
+    mergerfsImage:
+      repository: hvalev/mergerfs
+      pullPolicy: IfNotPresent
+      tag: 2.40.2.1@sha256:15375ac6e1646d86ffd7c2cea380dc7dfba6a07a1e8d2bc84629d67b0044f90d
+
     ingress:
       main:
         enabled: true
@@ -78,12 +83,53 @@ spec:
       media:
         enabled: true
         type: nfs
-        mountPath: /media
+        # mountPath: /media
         server: ${NFS_SERVER_0}
         path: ${DATASET_MEDIA}
+        targetSelector:
+          main:
+            mergerfs:
+              mountPath: /disks/media
       overseerr:
         enabled: true
         type: nfs
-        mountPath: /overseerr
+        # mountPath: /overseerr
         server: ${NFS_SERVER_0}
         path: ${DATASET_OVERSEERR}
+        targetSelector:
+          main:
+            mergerfs:
+              mountPath: /disks/overseerr
+      merged:
+        enabled: true
+        type: pvc
+        mountPath: /media
+        targetSelectAll: true
+
+    workload:
+      main:
+        podSpec:
+          containers:
+            mergerfs:
+              enabled: true
+              primary: false
+              securityContext:
+                # privileged: true
+                # runAsNonRoot: false
+                readOnlyRootFilesystem: false
+                runAsUser: 0
+                runAsGroup: 0
+                capabilities:
+                  add:
+                    - SYS_ADMIN
+              imageSelector: mergerfsImage
+              env:
+                MERGERFS_PARAMS: "moveonenospc=true,dropcacheonclose=true,category.create=epmfs,cache.files=partial"
+              args: ["/disks/*", "/media"]
+              probes:
+                liveness:
+                  enabled: false
+                readiness:
+                  enabled: false
+                startup:
+                  enabled: false
