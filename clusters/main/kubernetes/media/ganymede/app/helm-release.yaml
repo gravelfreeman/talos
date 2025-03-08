@@ -64,9 +64,10 @@ spec:
         password: ${CNPG_PASSWORD_GANYMEDE}
         backups:
           enabled: true
-          revision: "2"
+          revision: "3"
           credentials: backblaze
         recovery:
+          revision: "2"
           credentials: backblaze
 
     service:
