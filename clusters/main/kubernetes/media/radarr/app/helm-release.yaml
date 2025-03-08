@@ -46,7 +46,7 @@ spec:
     mergerfsImage:
       repository: hvalev/mergerfs
       pullPolicy: IfNotPresent
-      tag: 2.40.2.1@sha256:15375ac6e1646d86ffd7c2cea380dc7dfba6a07a1e8d2bc84629d67b0044f90d
+      tag: 2.40.2.1@sha256:9cefd1580f4a260bdbaebec1761ea8152ba74ad57d9b05c989a1478a23a387c8
 
     ingress:
       main:
