@@ -20,7 +20,7 @@ resources:
   - sftpgo/ks.yaml
   - shlink
   - snapdrop/ks.yaml
-  # - speedtest-tracker/ks.yaml
+  - speedtest-tracker/ks.yaml
   - splitpro/ks.yaml
   - stirling-pdf/ks.yaml
   - thelounge/ks.yaml
