@@ -87,10 +87,11 @@ spec:
                 schedule: 0 5 * * *
       media:
         enabled: true
-        type: hostPath
+        type: pvc
+        claimName: mergerfs-merged-pvc
         mountPath: /media
-        hostPath: /merged
-        hostPathType: DirectoryOrCreate
+        mountPropagation: Bidirectional
+        targetSelectAll: true
       # media:
       #   enabled: true
       #   type: nfs

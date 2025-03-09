@@ -35,7 +35,7 @@ spec:
           singleNode: true
         backups:
           enabled: true
-          revision: "3"
+          revision: "5"
           credentials: backblaze
         recovery:
           revision: "4"
@@ -75,3 +75,4 @@ spec:
             main:
               env:
                 APP_URL: https://speedtest.${DOMAIN_0}
+                SPEEDTEST_SCHEDULE: 0 8 * * *

@@ -55,7 +55,7 @@ spec:
     persistence:
       merged:
         enabled: true
-        type: emptyDir
+        type: pvc
         mountPath: /merged
         mountPropagation: Bidirectional
         targetSelectAll: true
