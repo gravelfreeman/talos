@@ -105,3 +105,11 @@ spec:
         type: nfs
         server: ${NFS_SERVER_0}
         path: ${DATASET_BACKUPS}/immich/encoded-video
+
+    workload:
+      machinelearning:
+        podSpec:
+          containers:
+            machinelearning:
+              resources:
+                requests: {}
