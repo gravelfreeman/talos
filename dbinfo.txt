@@ -1,0 +1,10 @@
+Application    Username     Password                                                            Address                                                          Port
+authelia       authelia     jBqEvVH6ER4qgxKnWTTJpUiwZ7HrqYKYRJNvuvJKJ3mpYz2LvoFBXvmg3GR83Vj3    authelia-cnpg-main-rw.authelia.svc.cluster.local                 5432
+ganymede       ganymede     7L96VeYfxKdgYbuo32odBRRBF8Xtxtr4GewyVxYbibgnzdz8TM9PApcDQQbXq4RX    ganymede-app-template-cnpg-main-rw.ganymede.svc.cluster.local    5432
+lldap          lldap        L8zKXvMpuPvHNHgy6ttK7FE7kiovwPhqHFKEMiePUbeTKBRLUHcefCHCUNUpfTvV    lldap-cnpg-main-rw.lldap.svc.cluster.local                       5432
+mealie         mealie       PLACEHOLDERPASSWORD                                                 mealie-cnpg-main-rw.mealie.svc.cluster.local                     5432
+nextcloud      nextcloud    ZjNbqo4i9FvzrUfkDJ33pC76V6GWnyXo                                    nextcloud-cnpg-main-rw.nextcloud.svc.cluster.local               5432
+projectsend                                                                                     .projectsend.svc.cluster.local                                   
+shlink         shlink       cUuuJPkuD2cKT7R7JkAy!Fmet3!MHhBV                                    shlink-cnpg-main-rw.shlink.svc.cluster.local                     5432
+splitpro       splitpro     2HsozC6kKVEf7kcqJ9wxC7G84XYxEuM3msBFcYmbpFdRfxgaHWmh2AtpgpeReHag    splitpro-app-template-cnpg-main-rw.splitpro.svc.cluster.local    5432
+vikunja        vikunja      PLACEHOLDERPASSWORD                                                 vikunja-cnpg-main-rw.vikunja.svc.cluster.local                   5432
