@@ -56,27 +56,22 @@ spec:
       merged:
         enabled: true
         type: pvc
+        accessModes: ReadWriteMany
         mountPath: /merged
         mountPropagation: Bidirectional
         targetSelectAll: true
       media:
         enabled: true
         type: nfs
+        mountPath: /disks/media
         server: ${NFS_SERVER_0}
         path: ${DATASET_MEDIA}
-        targetSelector:
-          main:
-            mergerfs:
-              mountPath: /disks/media
       overseerr:
         enabled: true
         type: nfs
+        mountPath: /disks/overseerr
         server: ${NFS_SERVER_0}
         path: ${DATASET_OVERSEERR}
-        targetSelector:
-          main:
-            mergerfs:
-              mountPath: /disks/overseerr
 
     workload:
       main:
@@ -84,7 +79,7 @@ spec:
           containers:
             main:
               env:
-                MERGERFS_PARAMS: "moveonenospc=true,dropcacheonclose=true,category.create=epmfs,cache.files=partial"
+                MERGERFS_PARAMS: "cache.files=off,category.create=mfs,dropcacheonclose=false"
               probes:
                 liveness:
                   enabled: false
