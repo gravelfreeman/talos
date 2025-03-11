@@ -79,7 +79,7 @@ spec:
           containers:
             main:
               env:
-                MERGERFS_PARAMS: "cache.files=off,category.create=mfs,dropcacheonclose=false"
+                MERGERFS_PARAMS: "dropcacheonclose=false,category.create=mspmfs,cache.files=off,ignorepponrename=true"
               probes:
                 liveness:
                   enabled: false
