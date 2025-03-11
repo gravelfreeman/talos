@@ -27,3 +27,4 @@ resources:
   - vikunja/ks.yaml
   - whisper-asr-webservice/ks.yaml
   - kubernetes-dashboard/ks.yaml
+  - debian-bullseye/ks.yaml

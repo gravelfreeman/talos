@@ -32,9 +32,9 @@ spec:
     global:
       stopAll: false
 
-    securityContext:
-      container:
-        privileged: true
+    # securityContext:
+    #   container:
+    #     privileged: true
 
     credentials:
       backblaze:
@@ -83,13 +83,5 @@ spec:
         accessModes: ReadWriteMany
         existingClaim: mergerfs-app-template-merged
         mountPath: /media
-        mountPropagation: Bidirectional
+        # mountPropagation: Bidirectional
         targetSelectAll: true
-
-    workload:
-      main:
-        podSpec:
-          containers:
-            main:
-              env:
-                RADARR__LOG__LEVEL: trace

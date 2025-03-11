@@ -1,16 +1,14 @@
----
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: radarr
-  namespace: mergerfs
+  name: debian-bullseye
+  namespace: debian-bullseye
 spec:
   interval: 15m
   chart:
     spec:
-      chart: radarr
-      version: 23.19.0
+      chart: debian-bullseye
+      version: 7.5.1
       sourceRef:
         kind: HelmRepository
         name: truecharts
@@ -33,11 +31,7 @@ spec:
     TZ: America/Montreal
     global:
       stopAll: false
-
-    # securityContext:
-    #   container:
-    #     privileged: true
-
+    
     credentials:
       backblaze:
         type: s3
@@ -56,34 +50,39 @@ spec:
             middlewares:
               - name: auth
                 namespace: traefik
-              - name: theme-radarr
-                namespace: traefik
         tls:
           - hosts:
-            - radarr.${DOMAIN_0}
+            - debian.${DOMAIN_0}
             clusterIssuer: domain-0-wildcard
-            secretName: certificate-issuer-domain-0-wildcard
         hosts:
-          - host: radarr.${DOMAIN_0}
+          - host: debian.${DOMAIN_0}
 
     persistence:
-      config:
-        volsync:
-          - name: cfg
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-              trigger:
-                schedule: 0 5 * * *
+      homedirectory:
+        enabled: true
+        type: emptyDir
+        mountPath: /debian
       media:
         enabled: true
-        type: pvc
-        accessModes: ReadWriteMany
-        existingClaim: mergerfs-app-template-merged
-        mountPath: /media
-        # mountPropagation: Bidirectional
-        targetSelectAll: true
+        type: nfs
+        mountPath: /disks/media
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_MEDIA}
+      overseerr:
+        enabled: true
+        type: nfs
+        mountPath: /disks/overseerr
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_OVERSEERR}
+
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                CUSTOM_RES_H: "1920"
+                CUSTOM_RES_W: "1080"
+                DATA_PERM: "770"
+                ROOT_PWD: "1234"
+                USER_LOCALES: fr_CA.UTF-8 UTF-8
