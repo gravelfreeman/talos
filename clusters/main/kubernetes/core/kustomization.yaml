@@ -14,4 +14,4 @@ resources:
   - system-upgrade-controller-plans/ks.yaml
   - traefik/ks.yaml
   - external-service/ks.yaml
-  - mergerfs/ks.yaml
+  # - mergerfs/ks.yaml
