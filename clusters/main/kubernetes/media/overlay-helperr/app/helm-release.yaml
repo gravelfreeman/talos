@@ -35,8 +35,15 @@ spec:
 
     image:
       repository: gsariev/maintainerr-overlay-helperr
-      tag: latest@sha256:5fe5036f11d5f26d3ccf98ec19d77ffb4347d1527c339e68398970774b39e819
+      tag: 1.0.3@sha256:717af79841641b2bfd860b9d52fdb7dfd24a9a8567434ff5a446a75133ad97b1
       pullPolicy: IfNotPresent
+
+    securityContext:
+      container:
+        runAsNonRoot: false
+        readOnlyRootFilesystem: false
+        runAsUser: 0
+        runAsGroup: 0
 
     credentials:
       backblaze:
@@ -49,9 +56,7 @@ spec:
 
     service:
       main:
-        ports:
-          main:
-            port: 3000
+        enabled: false
 
     persistence:
       config:
@@ -76,11 +81,6 @@ spec:
         podSpec:
           containers:
             main:
-              securityContext:
-                runAsNonRoot: false
-                readOnlyRootFilesystem: false
-                runAsUser: 0
-                runAsGroup: 0
               env:
                 PLEX_URL: http://plex.plex.svc.cluster.local:32400
                 PLEX_TOKEN: ${PLEX_TOKEN}
@@ -94,10 +94,17 @@ spec:
                 FONT_SIZE: 45
                 PADDING: 15
                 BACK_RADIUS: 20
-                HORIZONTAL_OFFSET: 35
+                HORIZONTAL_OFFSET: 40
                 HORIZONTAL_ALIGN: left
-                VERTICAL_OFFSET: 50
+                VERTICAL_OFFSET: 45
                 VERTICAL_ALIGN: bottom
+                BACK_WIDTH: "600"
+                BACK_HEIGHT: "100"
+                DATE_FORMAT: "d MMM"
+                OVERLAY_TEXT: "RETIRÉ LE"
+                ENABLE_DAY_SUFFIX: false
+                ENABLE_UPPERCASE: true
+                LANGUAGE: "fr-CA"
                 RUN_INTERVAL: 2880
               probes:
                 liveness:
