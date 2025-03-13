@@ -94,12 +94,12 @@ spec:
                 FONT_SIZE: 45
                 PADDING: 15
                 BACK_RADIUS: 20
-                HORIZONTAL_OFFSET: 40
+                HORIZONTAL_OFFSET: 50
                 HORIZONTAL_ALIGN: left
-                VERTICAL_OFFSET: 45
+                VERTICAL_OFFSET: 50
                 VERTICAL_ALIGN: bottom
                 BACK_WIDTH: "600"
-                BACK_HEIGHT: "100"
+                BACK_HEIGHT: "80"
                 DATE_FORMAT: "d MMM"
                 OVERLAY_TEXT: "RETIRÉ LE"
                 ENABLE_DAY_SUFFIX: false
