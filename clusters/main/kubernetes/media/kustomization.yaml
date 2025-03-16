@@ -29,3 +29,4 @@ resources:
   - tautulli/ks.yaml
   - tubesync/ks.yaml
   - watcharr/ks.yaml
+  - pinchflat/ks.yaml

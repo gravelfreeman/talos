@@ -1,0 +1,97 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: pinchflat
+  namespace: pinchflat
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 14.5.3
+      sourceRef:
+        kind: HelmRepository
+        name: truecharts
+        namespace: flux-system
+      interval: 15m
+  timeout: 20m
+  maxHistory: 3
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    TZ: America/Montreal
+    global:
+      stopAll: false
+
+    image:
+      repository: ghcr.io/kieraneglin/pinchflat
+      tag:  latest@sha256:fb82ca2f06afaf0651ec23bd68f9c45d9b44bbc94097d7a9bb28aa7431615e0c
+      pullPolicy: IfNotPresent
+
+    credentials:
+      backblaze:
+        type: s3
+        url: ${BUCKET_URL}
+        bucket: ${BUCKET_NAME}
+        accessKey: ${BUCKET_ACCESSKEY}
+        secretKey: ${BUCKET_SECRETKEY}
+        encrKey: ${BUCKET_ENCRKEY}
+
+    service:
+      main:
+        ports:
+          main:
+            port: 8945
+
+    persistence:
+      config:
+        enabled: true
+        type: pvc
+        mountPath: /config
+        targetSelectAll: true
+        volsync:
+          - name: cfg
+            type: restic
+            cleanupCachePVC: true
+            credentials: backblaze
+            dest:
+              enabled: true
+            src:
+              enabled: true
+              trigger:
+                schedule: 0 5 * * *
+      downloads:
+        enabled: true
+        type: nfs
+        mountPath: /downloads
+        server: ${NFS_SERVER_0}
+        path: ${DATASET_MEDIA}/archive/youtube
+
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              probes:
+                liveness:
+                  enabled: true
+                  type: "{{ .Values.service.main.ports.main.protocol }}"
+                  port: "{{ $.Values.service.main.ports.main.targetPort | default .Values.service.main.ports.main.port }}"
+                readiness:
+                  enabled: true
+                  type: "{{ .Values.service.main.ports.main.protocol }}"
+                  port: "{{ $.Values.service.main.ports.main.targetPort | default .Values.service.main.ports.main.port }}"
+                startup:
+                  enabled: true
+                  type: "{{ .Values.service.main.ports.main.protocol }}"
+                  port: "{{ $.Values.service.main.ports.main.targetPort | default .Values.service.main.ports.main.port }}"

@@ -31,6 +31,11 @@ spec:
     global:
       stopAll: false
 
+    image:
+      repository: nktnet/s-pdf
+      pullPolicy: IfNotPresent
+      tag: latest-fat
+
     credentials:
       backblaze:
         type: s3
@@ -112,6 +117,9 @@ spec:
           containers:
             main:
               env:
+                DOCKER_ENABLE_SECURITY: false
+                SECURITY_ENABLE_LOGIN: false
+                INSTALL_BOOK_AND_ADVANCED_HTML_OPS: false
                 UI_APPNAME: Freeman • PDF
                 UI_APPNAMENAVBAR: Freeman • PDF
                 LANGS: fr-FR
