@@ -74,4 +74,13 @@ spec:
         type: nfs
         mountPath: /downloads
         server: ${NFS_SERVER_0}
-        path: ${DATASET_MEDIA}/temp/downloads/ytdl
+        path: ${DATASET_MEDIA}/temp/downloads/tubesync
+
+    workload:
+      main:
+        podSpec:
+          containers:
+            main:
+              env:
+                TUBESYNC_DEBUG: "True"
+                TUBESYNC_RESET_DOWNLOAD_DIR: "False"
