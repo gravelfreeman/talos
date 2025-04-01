@@ -53,7 +53,7 @@ spec:
                 IDRAC_HOST: "${IDRAC_HOST}"
                 IDRAC_USERNAME: "${IDRAC_USERNAME}"
                 IDRAC_PASSWORD: "${IDRAC_PASSWORD}"
-                FAN_SPEED: 100
-                CPU_TEMPERATURE_THRESHOLD: 50
-                CHECK_INTERVAL: 60
+                FAN_SPEED: 90
+                CPU_TEMPERATURE_THRESHOLD: 80
+                CHECK_INTERVAL: 300
                 DISABLE_THIRD_PARTY_PCIE_CARD_DELL_DEFAULT_COOLING_RESPONSE: true
