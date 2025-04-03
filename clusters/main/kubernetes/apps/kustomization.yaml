@@ -4,6 +4,7 @@ resources:
   - actualserver/ks.yaml
   - changedetection/ks.yaml
   - companion/ks.yaml
+  - debian-bullseye/ks.yaml
   - dell-idrac-fan-controller/ks.yaml
   - duplicacy/ks.yaml
   - flatnotes/ks.yaml
@@ -11,10 +12,11 @@ resources:
   - homebox/ks.yaml
   - homepage/ks.yaml
   - immich/ks.yaml
+  - kubernetes-dashboard/ks.yaml
   - maloja/ks.yaml
   - mealie/ks.yaml
   - multi-scrobbler/ks.yaml
-  - nextcloud/ks.yaml
+  # - nextcloud/ks.yaml
   - projectsend/ks.yaml
   - rtmp-hls/ks.yaml
   - sftpgo/ks.yaml
@@ -23,8 +25,6 @@ resources:
   - speedtest-tracker/ks.yaml
   - splitpro/ks.yaml
   - stirling-pdf/ks.yaml
+  - taxhacker/ks.yaml
   - thelounge/ks.yaml
   - vikunja/ks.yaml
-  - whisper-asr-webservice/ks.yaml
-  - kubernetes-dashboard/ks.yaml
-  - debian-bullseye/ks.yaml
