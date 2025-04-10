@@ -36,13 +36,6 @@ spec:
       repository: invoiceshelf/invoiceshelf
       pullPolicy: IfNotPresent
       tag: latest@sha256:b0deaff96c100d3e0c688486a38b0d488e7936b4d75c1c2847e4cf72c2b086a8
-
-    securityContext:
-      container:
-        readOnlyRootFilesystem: false
-        runAsNonRoot: false
-        runAsUser: 0
-        runAsGroup: 0
     
     credentials:
       backblaze:
@@ -122,24 +115,43 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 3 * * *
-      run-php:
+      varlog:
         enabled: true
         type: emptyDir
-        mountPath: /run/php
+        mountPath: /var/log
+        defaultMode: 0775
         targetSelectAll: true
 
     workload:
       main:
         podSpec:
+          initContainers:
+            main:
+              enabled: true
+              type: init
+              imageSelector: image
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  mkdir -p /run/php
+                  chown www-data:www-data /run/php
+                  touch /var/log/php8.2-fpm.log
+                  chown 568:568 /var/log/php8.2-fpm.log
+                  /entrypoint.sh
+              securityContext:
+                runAsUser: 0
+                readOnlyRootFilesystem: false
           containers:
             main:
+              command: ["php-fpm8.2", "-F"]
               env:
                 PHP_TZ: America/Montreal
                 TIMEZONE: America/Montreal
                 APP_NAME: Freeman
                 APP_ENV: local
                 APP_DEBUG: true
-                APP_URL: https://client.${DOMAIN_0}
+                APP_URL: http://invoiceshelf-app-template.invoiceshelf.svc.cluster.local:90
                 APP_LOCALE: fr
                 DB_CONNECTION: pgsql
                 DB_HOST: invoiceshelf-app-template-cnpg-main-rw
@@ -152,8 +164,8 @@ spec:
                 SESSION_LIFETIME: 120
                 SESSION_ENCRYPT: true
                 SESSION_PATH: /
-                SESSION_DOMAIN: localhost
-                SANCTUM_STATEFUL_DOMAINS: localhost:9090
+                SESSION_DOMAIN: invoiceshelf-app-template.invoiceshelf.svc.cluster.local
+                SANCTUM_STATEFUL_DOMAINS: invoiceshelf-app-template.invoiceshelf.svc.cluster.local:9090
                 STARTUP_DELAY: 0
                 MAIL_DRIVER: smtp
                 MAIL_HOST: ${SMTP_HOST_0}
