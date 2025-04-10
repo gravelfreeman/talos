@@ -12,7 +12,7 @@ resources:
   - homebox/ks.yaml
   - homepage/ks.yaml
   - immich/ks.yaml
-  - invoiceshelf/ks.yaml
+  # - invoiceshelf/ks.yaml
   - kubernetes-dashboard/ks.yaml
   - maloja/ks.yaml
   - mealie/ks.yaml
