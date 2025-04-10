@@ -36,14 +36,14 @@ spec:
       repository: invoiceshelf/invoiceshelf
       pullPolicy: IfNotPresent
       tag: latest@sha256:b0deaff96c100d3e0c688486a38b0d488e7936b4d75c1c2847e4cf72c2b086a8
-
+    
     securityContext:
       container:
         readOnlyRootFilesystem: false
         runAsNonRoot: false
         runAsUser: 0
         runAsGroup: 0
-    
+
     credentials:
       backblaze:
         type: s3
@@ -122,23 +122,27 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 3 * * *
-      run-php:
-        enabled: true
-        type: emptyDir
-        mountPath: /run/php
-        targetSelectAll: true
 
     workload:
       main:
         podSpec:
           containers:
             main:
+              lifecycle:
+                postStart:
+                  type: exec
+                  command:
+                    - /bin/sh
+                    - -c
+                    - |
+                      mkdir -p /run/php
+                      chown www-data:www-data /run/php
               env:
                 PHP_TZ: America/Montreal
                 TIMEZONE: America/Montreal
                 APP_NAME: Freeman
                 APP_ENV: local
-                APP_DEBUG: true
+                APP_DEBUG: false
                 APP_URL: https://client.${DOMAIN_0}
                 APP_LOCALE: fr
                 DB_CONNECTION: pgsql
@@ -152,8 +156,8 @@ spec:
                 SESSION_LIFETIME: 120
                 SESSION_ENCRYPT: true
                 SESSION_PATH: /
-                SESSION_DOMAIN: localhost
-                SANCTUM_STATEFUL_DOMAINS: localhost:9090
+                SESSION_DOMAIN: client.${DOMAIN_0}
+                SANCTUM_STATEFUL_DOMAINS: client.${DOMAIN_0}
                 STARTUP_DELAY: 0
                 MAIL_DRIVER: smtp
                 MAIL_HOST: ${SMTP_HOST_0}
