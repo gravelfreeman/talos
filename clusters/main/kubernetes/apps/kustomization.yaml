@@ -26,6 +26,6 @@ resources:
   - speedtest-tracker/ks.yaml
   - splitpro/ks.yaml
   - stirling-pdf/ks.yaml
-  - taxhacker/ks.yaml
+  # - taxhacker/ks.yaml
   - thelounge/ks.yaml
   - vikunja/ks.yaml
