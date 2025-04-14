@@ -36,6 +36,11 @@ spec:
       repository: invoiceshelf/invoiceshelf
       pullPolicy: IfNotPresent
       tag: latest@sha256:b0deaff96c100d3e0c688486a38b0d488e7936b4d75c1c2847e4cf72c2b086a8
+
+    opensshImage:
+      repository: ghcr.io/linuxserver/openssh-server
+      pullPolicy: IfNotPresent
+      tag: latest
     
     securityContext:
       container:
@@ -58,12 +63,15 @@ spec:
         enabled: true
         cluster:
           singleNode: true
-        mode: standalone
+        mode: recovery
         database: invoiceshelf
         user: invoiceshelf
         password: ${CNPG_PASSWORD_INVOICESHELF}
         backups:
           enabled: true
+          revision: "1"
+          credentials: backblaze
+        recovery:
           credentials: backblaze
 
     service:
@@ -72,6 +80,12 @@ spec:
           main:
             port: 9090
             targetPort: 80
+          openssh:
+            enabled: true
+            protocol: tcp
+            port: 22
+            targetPort: 2222
+            targetSelector: openssh
 
     ingress:
       main:
@@ -93,8 +107,10 @@ spec:
       config:
         enabled: true
         type: pvc
-        mountPath: /conf
-        targetSelectAll: true
+        targetSelector:
+          main:
+            main:
+              mountPath: /conf
         volsync:
           - name: cfg
             type: restic
@@ -138,6 +154,13 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 3 * * *
+      openssh:
+        enabled: true
+        type: pvc
+        targetSelector:
+          main:
+            openssh:
+              mountPath: /config
 
     workload:
       main:
@@ -183,21 +206,39 @@ spec:
                 MAIL_ENCRYPTION: tls
                 MAIL_FROM_NAME: ${SMTP_NAME_INVOICESHELF}
                 MAIL_FROM_ADDRESS: ${SMTP_FROM_INVOICESHELF}
-    
-    addons:
-      codeserver:
-        enabled: true
-        ingress:
-          enabled: true
-          integrations:
-            traefik:
+            openssh:
               enabled: true
-              middlewares:
-                - name: auth
-                  namespace: traefik
-          tls:
-            - hosts:
-              - client.cs.${DOMAIN_0}
-              clusterIssuer: domain-0-wildcard
-          hosts:
-            - host: client.cs.${DOMAIN_0}
+              primary: false
+              name: openssh
+              imageSelector: opensshImage
+              env:
+                LOG_STDOUT: true
+                USER_NAME: ${USER_1}
+                PASSWORD_ACCESS: false
+                SUDO_ACCESS: true
+                PUBLIC_KEY: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIATd5+Lcjz0RK9tkwjl0poFti50RqOevT1gAAY9PLZOs"
+              lifecycle:
+                postStart:
+                  type: exec
+                  command:
+                    - /bin/sh
+                    - -c
+                    - |
+                      chmod 0400 /config/ssh_host_keys/ssh_host_ecdsa_key
+                      chmod 0400 /config/ssh_host_keys/ssh_host_ed25519_key
+                      chmod 0400 /config/ssh_host_keys/ssh_host_rsa_key
+                      apk add nodejs npm
+                      echo "HOME=/config" > /config/.ssh/environment
+                      chmod 600 /config/.ssh/environment
+                      sed -i 's/^#\?MaxAuthTries[[:space:]]\+[0-9]\+/MaxAuthTries 100/' /config/sshd/sshd_config
+                      sed -i 's/^PermitUserEnvironment[[:space:]]\+no/PermitUserEnvironment yes/' /config/sshd/sshd_config
+                      sed -i 's/^#\?PermitTunnel[[:space:]]\+no/PermitTunnel yes/' /config/sshd/sshd_config
+              probes:
+                liveness:
+                  enabled: false
+                readiness:
+                  enabled: false
+                startup:
+                  enabled: true
+                  type: "{{ .Values.service.main.ports.openssh.protocol }}"
+                  port: "{{ $.Values.service.main.ports.openssh.targetPort | default .Values.service.main.ports.openssh.port }}"
