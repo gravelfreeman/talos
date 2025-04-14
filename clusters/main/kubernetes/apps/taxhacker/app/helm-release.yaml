@@ -46,12 +46,15 @@ spec:
         enabled: true
         cluster:
           singleNode: true
-        mode: standalone
+        mode: recovery
         database: taxhacker
         user: taxhacker
         password: ${CNPG_PASSWORD_TAXHACKER}
         backups:
           enabled: true
+          revision: "1"
+          credentials: backblaze
+        recovery:
           credentials: backblaze
 
     image:
