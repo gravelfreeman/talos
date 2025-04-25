@@ -62,18 +62,6 @@ spec:
         enabled: true
         type: emptyDir
         mountPath: /debian
-      media:
-        enabled: true
-        type: nfs
-        mountPath: /disks/media
-        server: ${NFS_SERVER_0}
-        path: ${DATASET_MEDIA}
-      overseerr:
-        enabled: true
-        type: nfs
-        mountPath: /disks/overseerr
-        server: ${NFS_SERVER_0}
-        path: ${DATASET_OVERSEERR}
 
     workload:
       main:

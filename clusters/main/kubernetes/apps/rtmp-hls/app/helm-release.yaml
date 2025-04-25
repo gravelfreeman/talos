@@ -78,12 +78,15 @@ spec:
     persistence:
       dash:
         enabled: true
+        type: emptyDir
         mountPath: /mnt/dash
       hls:
         enabled: true
+        type: emptyDir
         mountPath: /mnt/hls
       nginx:
         enabled: true
+        type: emptyDir
         mountPath: /var/run/nginx
 
     workload:

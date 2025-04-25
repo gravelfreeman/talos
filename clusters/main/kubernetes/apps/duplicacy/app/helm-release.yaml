@@ -71,29 +71,9 @@ spec:
               trigger:
                 schedule: 0 3 * * *
       cache:
-        volsync:
-          - name: cch
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-              trigger:
-                schedule: 0 3 * * *
+        type: emptyDir
       logs:
-        volsync:
-          - name: lgs
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-              trigger:
-                schedule: 0 3 * * *
+        type: emptyDir
       backups:
         enabled: true
         type: nfs

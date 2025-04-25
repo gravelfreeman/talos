@@ -49,10 +49,10 @@ spec:
           singleNode: true
         backups:
           enabled: true
-          revision: "4"
+          revision: "5"
           credentials: backblaze
         recovery:
-          revision: "3"
+          revision: "4"
           credentials: backblaze
 
     ingress:
@@ -69,18 +69,6 @@ spec:
           - host: todo.${DOMAIN_0}
 
     persistence:
-      vikunja-config:
-        volsync:
-          - name: cfg
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-              trigger:
-                schedule: 0 3 * * *
       files:
         volsync:
           - name: dat

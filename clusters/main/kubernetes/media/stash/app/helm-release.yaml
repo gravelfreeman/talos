@@ -81,18 +81,6 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 5 * * *
-      metadata:
-        volsync:
-          - name: md
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-              trigger:
-                schedule: 0 5 * * *
       generated:
         volsync:
           - name: str
@@ -105,30 +93,12 @@ spec:
               enabled: true
               trigger:
                 schedule: 0 5 * * *
-      cache:
-        volsync:
-          - name: cch
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-              trigger:
-                schedule: 0 5 * * *
       blobs:
-        volsync:
-          - name: blb
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: true
-              trigger:
-                schedule: 0 5 * * *
+        type: emptyDir
+      cache:
+        type: emptyDir
+      metadata:
+        type: emptyDir
       media:
         enabled: true
         type: nfs

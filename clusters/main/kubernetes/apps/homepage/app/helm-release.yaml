@@ -87,20 +87,20 @@ spec:
               trigger:
                 schedule: 0 3 * * *
     
-    addons:
-      codeserver:
-        enabled: true
-        ingress:
-          enabled: true
-          integrations:
-            traefik:
-              enabled: true
-              middlewares:
-                - name: auth
-                  namespace: traefik
-          tls:
-            - hosts:
-              - root.cs.${DOMAIN_0}
-              clusterIssuer: domain-0-wildcard
-          hosts:
-            - host: root.cs.${DOMAIN_0}
+    # addons:
+    #   codeserver:
+    #     enabled: true
+    #     ingress:
+    #       enabled: true
+    #       integrations:
+    #         traefik:
+    #           enabled: true
+    #           middlewares:
+    #             - name: auth
+    #               namespace: traefik
+    #       tls:
+    #         - hosts:
+    #           - root.cs.${DOMAIN_0}
+    #           clusterIssuer: domain-0-wildcard
+    #       hosts:
+    #         - host: root.cs.${DOMAIN_0}

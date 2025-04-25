@@ -31,7 +31,7 @@ spec:
   values:
     TZ: America/Montreal
     global:
-      stopAll: false
+      stopAll: true
 
     credentials:
       backblaze:

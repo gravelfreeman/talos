@@ -1,17 +1,17 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - authelia/ks.yaml
+  # - authelia/ks.yaml
   - blocky/ks.yaml
   - clusterissuer/ks.yaml
-  - external-dns-unifi/ks.yaml
-  - flare-bypasser/ks.yaml
-  - gluetun/ks.yaml
+  # - external-dns-unifi/ks.yaml
+  # - gluetun/ks.yaml
+  # - k8tz/ks.yaml
   - kyverno-policies/ks.yaml
-  - lldap/ks.yaml
+  # - lldap/ks.yaml
   - metallb-config/ks.yaml
-  - pgadmin/ks.yaml
+  # - pgadmin/ks.yaml
   - system-upgrade-controller-plans/ks.yaml
   - traefik/ks.yaml
-  - external-service/ks.yaml
-  - mergerfs/ks.yaml
+  # - external-service/ks.yaml
+  # - mergerfs/ks.yaml

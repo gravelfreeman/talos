@@ -63,53 +63,13 @@ spec:
 
     persistence:
       configs:
-        volsync:
-          - name: cfg
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: false
-              trigger:
-                schedule: 0 3 * * *
-      tessdata:
-        volsync:
-          - name: dat
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: false
-              trigger:
-                schedule: 0 3 * * *
+        type: emptyDir
       custom-files:
-        volsync:
-          - name: cuf
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: false
-              trigger:
-                schedule: 0 3 * * *
+        type: emptyDir
+      tessdata:
+        type: emptyDir
       logs:
-        volsync:
-          - name: lgs
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: false
-              trigger:
-                schedule: 0 3 * * *
+        type: emptyDir
 
     workload:
       main:

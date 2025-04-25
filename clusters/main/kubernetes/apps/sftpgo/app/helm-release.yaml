@@ -71,41 +71,11 @@ spec:
               trigger:
                 schedule: 0 3 * * *
       data:
-        volsync:
-          - name: dat
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: false
-              trigger:
-                schedule: 0 3 * * *
+        type: emptyDir
       backupdirectory:
-        volsync:
-          - name: bkp
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: false
-              trigger:
-                schedule: 0 3 * * *
+        type: emptyDir
       shareaccess:
-        volsync:
-          - name: sha
-            type: restic
-            cleanupCachePVC: true
-            credentials: backblaze
-            dest:
-              enabled: true
-            src:
-              enabled: false
-              trigger:
-                schedule: 0 3 * * *
+        type: emptyDir
       userdata:
         enabled: true
         type: nfs

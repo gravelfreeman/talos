@@ -52,9 +52,10 @@ spec:
         password: ${CNPG_PASSWORD_TAXHACKER}
         backups:
           enabled: true
-          revision: "1"
+          revision: "2"
           credentials: backblaze
         recovery:
+          revision: "1"
           credentials: backblaze
 
     image:

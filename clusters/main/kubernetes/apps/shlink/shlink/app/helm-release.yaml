@@ -30,7 +30,7 @@ spec:
   values:
     TZ: America/Montreal
     global:
-      stopAll: false
+      stopAll: true
     
     credentials:
       backblaze:
@@ -49,10 +49,10 @@ spec:
           singleNode: true
         backups:
           enabled: true
-          revision: "3"
+          revision: "4"
           credentials: backblaze
         recovery:
-          revision: "2"
+          revision: "3"
           credentials: backblaze
 
     ingress:
