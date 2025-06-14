@@ -36,7 +36,7 @@ spec:
     image:
       repository: hvalev/mergerfs
       pullPolicy: IfNotPresent
-      tag: 2.40.2.2@sha256:2fe32b1d95b3a80b9b39f85684e56b8562a1c33d8787cb54f9c2f0ae92e591f1
+      tag: 2.40.2.2@sha256:91c4ca471960da4aacea411c4007b2faaa60d2a5280541ec128f784977a4a7af
 
     securityContext:
       container:
