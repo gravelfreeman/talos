@@ -43,7 +43,7 @@ spec:
 
     image:
       repository: ghcr.io/kieraneglin/pinchflat
-      tag: latest@sha256:4e975edf58f0861a5cbfe8fc6aac4851ff5a02dfc3f05ffeea4982e3084a5a4a
+      tag: latest@sha256:01b4f98aabaf3f5fe394213f7a32578c9e84e42080f52e2f8334021a4473b202
       pullPolicy: IfNotPresent
 
     securityContext:
