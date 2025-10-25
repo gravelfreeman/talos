@@ -61,7 +61,7 @@ spec:
     image:
       repository: ghcr.io/vas3k/taxhacker
       pullPolicy: Always #IfNotPresent
-      tag: latest@sha256:524005c7fe1b13d676d81e0851a8ab95b6f2df92e405e12cd52945e115c8836e
+      tag: latest@sha256:ec27c33daf73bd7d13a98cceae1fd93edf8edda3fa52aaea300f97df560f4557
 
     service:
       main:
