@@ -35,7 +35,7 @@ spec:
     image:
       repository: ghcr.io/zibbp/ganymede
       pullPolicy: IfNotPresent
-      tag: 4.14.0@sha256:d4aa6e69c08502dcb32d58343dbb7ff162ac8990bef59a37cfd8ae3b24141e7c
+      tag: 4.14.1@sha256:9797ca2460e3126a810608c1b03d325be17d076c254e5cba8b16379eae301ea3
 
     securityContext:
       container:
