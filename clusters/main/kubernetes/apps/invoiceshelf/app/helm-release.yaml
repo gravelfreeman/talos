@@ -35,7 +35,7 @@ spec:
     image:
       repository: invoiceshelf/invoiceshelf
       pullPolicy: IfNotPresent
-      tag: latest@sha256:fb609a80f5018d87bde3202b7709b03d81122f8d64ab12ebfd2604e8e22f21aa
+      tag: latest@sha256:85355dc121a533c454e406a692d9087c0d523f7b873b2413c66c25d26c88fa96
 
     opensshImage:
       repository: ghcr.io/linuxserver/openssh-server
