@@ -9,4 +9,4 @@ spec:
   interval: 10m
   url: oci://ghcr.io/fluxcd/flux-manifests
   ref:
-    tag: v2.8.4@sha256:87bf5a872dbd384fc4631fc710fbf8739216364b7388b8ffd76dd63d88f83b85
+    tag: v2.8.5@sha256:ffb44e1d6ade00aed4b0451a217cdfd3025ffed71137c2c1bb77f44d1b7f36f8
